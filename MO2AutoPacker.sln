@@ -1,0 +1,28 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MO2AutoPacker.UI", "MO2AutoPacker.UI\MO2AutoPacker.UI.csproj", "{E75A909A-55B7-4CAB-B005-29BD85B081D8}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MO2AutoPacker.Library", "MO2AutoPacker.Library\MO2AutoPacker.Library.csproj", "{AC77C6C4-ED8E-4CE3-B6E7-167B72FA25E7}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MO2AutoPacker.Library.Tests", "MO2AutoPacker.Library.Tests\MO2AutoPacker.Library.Tests.csproj", "{15FC0CFA-0314-446C-ABDB-98B8590AB823}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{E75A909A-55B7-4CAB-B005-29BD85B081D8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E75A909A-55B7-4CAB-B005-29BD85B081D8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E75A909A-55B7-4CAB-B005-29BD85B081D8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E75A909A-55B7-4CAB-B005-29BD85B081D8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AC77C6C4-ED8E-4CE3-B6E7-167B72FA25E7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AC77C6C4-ED8E-4CE3-B6E7-167B72FA25E7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AC77C6C4-ED8E-4CE3-B6E7-167B72FA25E7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AC77C6C4-ED8E-4CE3-B6E7-167B72FA25E7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{15FC0CFA-0314-446C-ABDB-98B8590AB823}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{15FC0CFA-0314-446C-ABDB-98B8590AB823}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{15FC0CFA-0314-446C-ABDB-98B8590AB823}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{15FC0CFA-0314-446C-ABDB-98B8590AB823}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
