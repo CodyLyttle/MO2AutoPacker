@@ -6,10 +6,27 @@
         <Nullable>enable</Nullable>
         <UseWPF>true</UseWPF>
         <AssemblyName>MO2AutoPacker GUI</AssemblyName>
+        <UseWindowsForms>true</UseWindowsForms>
     </PropertyGroup>
 
     <ItemGroup>
       <ProjectReference Include="..\MO2AutoPacker.Library\MO2AutoPacker.Library.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Page Update="CustomControls\WatermarkedTextBox.xaml">
+        <Generator>MSBuild:Compile</Generator>
+      </Page>
+      <Page Update="Banner.xaml">
+        <Generator>MSBuild:Compile</Generator>
+        <XamlRuntime>Wpf</XamlRuntime>
+        <SubType>Designer</SubType>
+      </Page>
+    </ItemGroup>
+
+    <ItemGroup>
+      <PackageReference Include="CommunityToolkit.Mvvm" Version="8.0.0" />
+      <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="8.0.0-rc.1.23419.4" />
+
+    </ItemGroup>
 </Project>

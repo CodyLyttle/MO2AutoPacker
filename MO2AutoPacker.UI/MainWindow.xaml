@@ -4,9 +4,15 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:MO2AutoPacker.UI"
+        xmlns:attached="clr-namespace:MO2AutoPacker.UI.AttachedProperties"
+        xmlns:custom="clr-namespace:MO2AutoPacker.UI.CustomControls"
         mc:Ignorable="d"
-        Title="Auto-Packer for MO2" Height="450" Width="800">
-    <Grid>
-
-    </Grid>
+        Title="Auto-Packer for MO2" Height="450" Width="800"
+        Padding="12 8"
+        SnapsToDevicePixels="True"
+        d:DataContext="{x:Static local:DesignMocks.MainWindow}">
+    <StackPanel>
+        <local:Banner Height="32"/>
+        <custom:PathPicker DataContext="{Binding RootPathPicker}"/>
+    </StackPanel>
 </Window>
