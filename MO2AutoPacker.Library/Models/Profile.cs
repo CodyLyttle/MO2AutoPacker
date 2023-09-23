@@ -1,4 +1,4 @@
-﻿namespace MO2AutoPacker.UI.Models;
+﻿namespace MO2AutoPacker.Library.Models;
 
 public class Profile
 {

@@ -1,13 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using CommunityToolkit.Mvvm.ComponentModel;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Messaging;
-using MO2AutoPacker.UI.Messages;
-using MO2AutoPacker.UI.Models;
+using MO2AutoPacker.Library.Messages;
+using MO2AutoPacker.Library.Models;
 
-namespace MO2AutoPacker.UI.ViewModels;
+namespace MO2AutoPacker.Library.ViewModels;
 
 // TODO: Respond to file system changes such as profile added/removed.
 public partial class ProfileSelectorViewModel : ViewModelBase, IRecipient<PathChangedMessage>

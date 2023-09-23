@@ -1,4 +1,4 @@
-﻿namespace MO2AutoPacker.UI.Messages;
+﻿namespace MO2AutoPacker.Library.Messages;
 
 public class BannerMessage
 {

@@ -1,18 +1,19 @@
-﻿<UserControl x:Class="MO2AutoPacker.UI.CustomControls.PathPicker"
+﻿<UserControl x:Class="MO2AutoPacker.UI.Views.PathPicker"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:root="clr-namespace:MO2AutoPacker.UI"
-             xmlns:local="clr-namespace:MO2AutoPacker.UI.CustomControls"
+             xmlns:local="clr-namespace:MO2AutoPacker.UI.Controls"
              xmlns:attached="clr-namespace:MO2AutoPacker.UI.AttachedProperties"
+             xmlns:dimensions="clr-namespace:MO2AutoPacker.UI.AttachedProperties.Dimensions"
              mc:Ignorable="d"
              d:DesignHeight="32" d:DesignWidth="300"
              d:DataContext="{x:Static root:DesignMocks.PathPicker}">
 
     <DockPanel LastChildFill="True">
         <Button x:Name="BtnOpenDialog"
-                attached:Dimensions.MatchWidthToHeight="True"
+                dimensions:Dimensions.MatchWidthToHeight="True"
                 DockPanel.Dock="Right"
                 Content="🗀"
                 FontWeight="Bold"

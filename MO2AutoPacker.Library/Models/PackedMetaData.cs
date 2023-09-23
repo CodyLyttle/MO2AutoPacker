@@ -1,7 +1,7 @@
 ﻿using System.Globalization;
 using System.Text;
 
-namespace MO2AutoPacker.Library;
+namespace MO2AutoPacker.Library.Models;
 
 // TODO: Further define packed mod info, eg.
 //       ModName    // Contains entire mod.

@@ -1,4 +1,4 @@
-﻿namespace MO2AutoPacker.UI.Validation;
+﻿namespace MO2AutoPacker.Library.Validation;
 
 public class ValidatorResult
 {

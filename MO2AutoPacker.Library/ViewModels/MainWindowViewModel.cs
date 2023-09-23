@@ -1,11 +1,9 @@
-﻿using System.Collections.Generic;
-using System.IO;
-using System.Text;
+﻿using System.Text;
 using CommunityToolkit.Mvvm.Messaging;
-using MO2AutoPacker.UI.Messages;
-using MO2AutoPacker.UI.Validation;
+using MO2AutoPacker.Library.Messages;
+using MO2AutoPacker.Library.Validation;
 
-namespace MO2AutoPacker.UI.ViewModels;
+namespace MO2AutoPacker.Library.ViewModels;
 
 // The primary class responsible for managing application state.
 // Any dependencies should be configured in App.xaml.cs and injected here.

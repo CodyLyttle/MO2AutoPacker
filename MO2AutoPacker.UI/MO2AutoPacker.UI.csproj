@@ -17,16 +17,15 @@
       <Page Update="CustomControls\WatermarkedTextBox.xaml">
         <Generator>MSBuild:Compile</Generator>
       </Page>
-      <Page Update="Banner.xaml">
+      <Page Update="Views\Banner.xaml">
         <Generator>MSBuild:Compile</Generator>
         <XamlRuntime>Wpf</XamlRuntime>
         <SubType>Designer</SubType>
       </Page>
-    </ItemGroup>
-
-    <ItemGroup>
-      <PackageReference Include="CommunityToolkit.Mvvm" Version="8.0.0" />
-      <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="8.0.0-rc.1.23419.4" />
-
+      <Page Update="Views\PathPicker.xaml">
+        <Generator>MSBuild:Compile</Generator>
+        <XamlRuntime>Wpf</XamlRuntime>
+        <SubType>Designer</SubType>
+      </Page>
     </ItemGroup>
 </Project>

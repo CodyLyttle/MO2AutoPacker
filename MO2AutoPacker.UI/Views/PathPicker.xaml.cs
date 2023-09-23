@@ -1,9 +1,9 @@
 ﻿using System.Windows;
 using System.Windows.Forms;
-using MO2AutoPacker.UI.ViewModels;
+using MO2AutoPacker.Library.ViewModels;
 using UserControl = System.Windows.Controls.UserControl;
 
-namespace MO2AutoPacker.UI.CustomControls;
+namespace MO2AutoPacker.UI.Views;
 
 public partial class PathPicker : UserControl
 {

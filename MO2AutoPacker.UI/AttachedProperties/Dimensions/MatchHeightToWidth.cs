@@ -1,6 +1,6 @@
 ﻿using System.Windows;
 
-namespace MO2AutoPacker.UI.AttachedProperties;
+namespace MO2AutoPacker.UI.AttachedProperties.Dimensions;
 
 public static partial class Dimensions
 {

@@ -1,5 +1,5 @@
 ﻿using System.Windows;
-using MO2AutoPacker.UI.ViewModels;
+using MO2AutoPacker.Library.ViewModels;
 
 namespace MO2AutoPacker.UI
 {

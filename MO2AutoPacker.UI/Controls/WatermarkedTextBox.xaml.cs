@@ -1,7 +1,7 @@
 ﻿using System.Windows;
 using System.Windows.Controls;
 
-namespace MO2AutoPacker.UI.CustomControls;
+namespace MO2AutoPacker.UI.Controls;
 
 public partial class WatermarkedTextBox : UserControl
 {

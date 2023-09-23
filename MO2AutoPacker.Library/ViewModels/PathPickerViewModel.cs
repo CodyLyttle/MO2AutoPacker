@@ -1,12 +1,10 @@
-﻿using System.Collections.Generic;
-using System.IO;
-using CommunityToolkit.Mvvm.ComponentModel;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using CommunityToolkit.Mvvm.Messaging;
-using MO2AutoPacker.UI.Messages;
-using MO2AutoPacker.UI.Validation;
+using MO2AutoPacker.Library.Messages;
+using MO2AutoPacker.Library.Validation;
 
-namespace MO2AutoPacker.UI.ViewModels;
+namespace MO2AutoPacker.Library.ViewModels;
 
 public partial class PathPickerViewModel : ViewModelBase
 {

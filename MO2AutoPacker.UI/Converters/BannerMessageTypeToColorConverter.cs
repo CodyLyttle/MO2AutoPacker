@@ -2,7 +2,7 @@
 using System.Globalization;
 using System.Windows.Data;
 using System.Windows.Media;
-using MO2AutoPacker.UI.Messages;
+using MO2AutoPacker.Library.Messages;
 
 namespace MO2AutoPacker.UI.Converters;
 

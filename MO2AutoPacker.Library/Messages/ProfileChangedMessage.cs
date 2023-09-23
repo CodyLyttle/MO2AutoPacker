@@ -1,6 +1,6 @@
-﻿using MO2AutoPacker.UI.Models;
+﻿using MO2AutoPacker.Library.Models;
 
-namespace MO2AutoPacker.UI.Messages;
+namespace MO2AutoPacker.Library.Messages;
 
 public class ProfileChangedMessage
 {

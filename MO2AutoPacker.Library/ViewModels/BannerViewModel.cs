@@ -1,16 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using System.Windows.Threading;
-using CommunityToolkit.Mvvm.ComponentModel;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using CommunityToolkit.Mvvm.Messaging;
-using MO2AutoPacker.UI.Messages;
+using MO2AutoPacker.Library.Messages;
+using MO2AutoPacker.Library.UIAbstractions;
 
-namespace MO2AutoPacker.UI.ViewModels;
+namespace MO2AutoPacker.Library.ViewModels;
 
 public partial class BannerViewModel : ViewModelBase, IRecipient<BannerMessage>
 {
+    private readonly IUIThreadDispatcher _dispatcher;
     private readonly Queue<BannerMessage> _messageQueue = new();
     private bool _isTransitioning;
 
@@ -25,9 +23,10 @@ public partial class BannerViewModel : ViewModelBase, IRecipient<BannerMessage>
     // Public setter in-case we allow user to tweak animation speed in the future.
     public TimeSpan FadeDuration { get; set; } = TimeSpan.FromSeconds(0.2);
 
-    public BannerViewModel(IMessenger messenger)
+    public BannerViewModel(IMessenger messenger, IUIThreadDispatcher dispatcher)
     {
         messenger.Register(this);
+        _dispatcher = dispatcher;
     }
 
     public void Receive(BannerMessage message)
@@ -82,7 +81,8 @@ public partial class BannerViewModel : ViewModelBase, IRecipient<BannerMessage>
             await Task.Delay(FadeDuration);
             _isTransitioning = false;
 
-            Dispatcher.CurrentDispatcher.Invoke(() => { Message = null; });
+            _dispatcher.Invoke(() => { Message = null; });
+            Message = null;
             TransitionNextMessage();
         });
     }
