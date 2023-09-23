@@ -1,25 +1,31 @@
-﻿using System;
+﻿using System.Collections.Generic;
 using System.IO;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using CommunityToolkit.Mvvm.Messaging;
 using MO2AutoPacker.UI.Messages;
+using MO2AutoPacker.UI.Validation;
 
 namespace MO2AutoPacker.UI.ViewModels;
 
 public partial class PathPickerViewModel : ViewModelBase
 {
     private readonly IMessenger _messenger;
+    private readonly List<Validators.Path> _pathValidators;
 
     [ObservableProperty]
     private string? _path;
+
     public string Watermark { get; }
 
     public PathPickerViewModel(IMessenger messenger, string watermark)
     {
         _messenger = messenger;
         Watermark = watermark;
+        _pathValidators = new List<Validators.Path> {PrimaryPathValidator};
     }
+
+    public void AddValidator(Validators.Path validator) => _pathValidators.Add(validator);
 
     [RelayCommand]
     private void UpdatePath(string? path)
@@ -27,40 +33,33 @@ public partial class PathPickerViewModel : ViewModelBase
         if (path == null)
             return;
 
-        if (ValidatePath(path, out string? errorMsg))
+        ValidatorResult result = ValidatePath(path);
+        if(result.WasSuccessful)
         {
             Path = path;
         }
         else
         {
-            if (errorMsg == null)
-                throw new InvalidOperationException("Error message must be provided for an invalid path");
-
-            _messenger.Send(new BannerMessage(BannerMessage.Type.Error, errorMsg));
+            _messenger.Send(new BannerMessage(BannerMessage.Type.Error, result.Message));
         }
     }
 
-    private bool ValidatePath(string path, out string? errorMsg)
+    private ValidatorResult ValidatePath(string path)
     {
-        errorMsg = null;
-
-        if (Directory.Exists(path))
-            return DoValidatePath(path, out errorMsg);
-
-        errorMsg = $"Directory '{path}' doesn't exist";
-        return false;
+        foreach (Validators.Path validator in _pathValidators)
+        {
+            ValidatorResult result = validator.Invoke(path);
+            if (!result.WasSuccessful)
+                return result;
+        }
+        
+        return ValidatorResult.Success();
     }
 
-    /// <summary>
-    /// A template method for appending extra logic to path validation. <br/>
-    /// By default, a path is considered valid if the directory exists.
-    /// </summary>
-    /// <param name="path">The path to validate.</param>
-    /// <param name="errorMsg">The error message holder.</param>
-    /// <returns>True if the path is valid, otherwise false.</returns>
-    protected virtual bool DoValidatePath(string path, out string? errorMsg)
+    private static ValidatorResult PrimaryPathValidator(string path)
     {
-        errorMsg = null;
-        return true;
+        return Directory.Exists(path)
+            ? ValidatorResult.Success()
+            : ValidatorResult.Fail($"Directory '{path}' doesn't exist");
     }
 }
