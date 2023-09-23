@@ -2,21 +2,24 @@
 using System.IO;
 using System.Text;
 using CommunityToolkit.Mvvm.Messaging;
+using MO2AutoPacker.UI.Messages;
 using MO2AutoPacker.UI.Validation;
 
 namespace MO2AutoPacker.UI.ViewModels;
 
 // The primary class responsible for managing application state.
 // Any dependencies should be configured in App.xaml.cs and injected here.
-public class MainWindowViewModel : ViewModelBase
+public partial class MainWindowViewModel : ViewModelBase, IRecipient<ProfileChangedMessage>
 {
     public PathPickerViewModel RootPathPicker { get; }
+    
+    public List<string> ProfilePaths { get; private set; } = new();
 
     public MainWindowViewModel(IMessenger messenger)
     {
-        RootPathPicker = new PathPickerViewModel(messenger, "Mod Organizer 2 path");
-        RootPathPicker.AddValidator((ModOrganizerPathValidator));
-
+        messenger.Register(this);
+        RootPathPicker = new PathPickerViewModel(messenger, PathKey.ModOrganizerRoot, "Mod Organizer 2 path");
+        RootPathPicker.AddValidator(ModOrganizerPathValidator);
     }
 
     // Delegate for RootPathPicker.
@@ -44,9 +47,15 @@ public class MainWindowViewModel : ViewModelBase
         {
             builder.Append($" '{subDir}',");
         }
+
         // Remove the unnecessary comma.
         builder.Remove(builder.Length - 1, 1);
-        
+
         return ValidatorResult.Fail(builder.ToString());
+    }
+
+    public void Receive(ProfileChangedMessage message)
+    {
+        // TODO: Update UI to reflect current profile.
     }
 }

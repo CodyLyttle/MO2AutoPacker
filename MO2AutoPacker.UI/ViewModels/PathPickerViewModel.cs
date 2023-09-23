@@ -16,11 +16,13 @@ public partial class PathPickerViewModel : ViewModelBase
     [ObservableProperty]
     private string? _path;
 
+    public PathKey Key { get; }
     public string Watermark { get; }
 
-    public PathPickerViewModel(IMessenger messenger, string watermark)
+    public PathPickerViewModel(IMessenger messenger, PathKey key, string watermark)
     {
         _messenger = messenger;
+        Key = key;
         Watermark = watermark;
         _pathValidators = new List<Validators.Path> {PrimaryPathValidator};
     }
@@ -37,6 +39,7 @@ public partial class PathPickerViewModel : ViewModelBase
         if(result.WasSuccessful)
         {
             Path = path;
+            _messenger.Send(new PathChangedMessage(Key, Path));
         }
         else
         {

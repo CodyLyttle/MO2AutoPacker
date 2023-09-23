@@ -1,4 +1,5 @@
 ﻿using CommunityToolkit.Mvvm.Messaging;
+using MO2AutoPacker.UI.Messages;
 using MO2AutoPacker.UI.ViewModels;
 
 namespace MO2AutoPacker.UI;
@@ -11,5 +12,5 @@ public static class DesignMocks
 
     public static readonly BannerViewModel Banner = new(MessengerDependency);
 
-    public static readonly PathPickerViewModel PathPicker = new(MessengerDependency, "Watermark");
+    public static readonly PathPickerViewModel PathPicker = new(MessengerDependency, PathKey.ModOrganizerRoot, "Watermark");
 }
