@@ -25,14 +25,15 @@
             <Style TargetType="Label" x:Key="HeaderLabel">
                 <Setter Property="FontSize" Value="16" />
                 <Setter Property="HorizontalContentAlignment" Value="Center" />
-                <Setter Property="VerticalAlignment" Value="Center"/>
+                <Setter Property="VerticalAlignment" Value="Center" />
             </Style>
 
             <Style TargetType="Border" x:Key="HeaderBorder">
                 <Setter Property="Height" Value="48"></Setter>
                 <Setter Property="BorderBrush" Value="{StaticResource BorderBrush}" />
                 <Setter Property="BorderThickness" Value="0 1 0 1" />
-                <Setter Property="VerticalAlignment" Value="Top" /><Setter Property="Background">
+                <Setter Property="VerticalAlignment" Value="Top" />
+                <Setter Property="Background">
                     <Setter.Value>
                         <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
                             <GradientStop Color="{StaticResource PrimaryColor}" Offset="0.0" />
@@ -60,7 +61,7 @@
         <Grid>
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="400" />
-                <ColumnDefinition Width="1"/>
+                <ColumnDefinition Width="1" />
                 <ColumnDefinition />
             </Grid.ColumnDefinitions>
 
@@ -86,35 +87,44 @@
                     Log
                 </Label>
             </Border>
-            
+
             <Rectangle Grid.Column="1"
                        Grid.Row="0"
                        Grid.RowSpan="2"
-                       Fill="{StaticResource BorderBrush}"/>
+                       Fill="{StaticResource BorderBrush}" />
 
             <!-- Left content -->
             <Border Grid.Column="0"
                     Grid.Row="1"
                     Style="{StaticResource ContentBorder}">
-                <StackPanel Margin="12 24 12 12">
-                    <views:PathPicker DataContext="{Binding RootPathPicker}"
-                                       HorizontalAlignment="Stretch"
-                                       FontSize="14"
-                                       Margin="12 0"/>
 
-                    <ComboBox DataContext="{Binding ProfileSelector}"
-                              ItemsSource="{Binding Profiles}"
-                              SelectedItem="{Binding SelectedProfile}"
-                              HorizontalAlignment="Stretch"
-                              Margin="12"
-                              FontSize="14">
-                        <ComboBox.ItemTemplate>
-                            <DataTemplate>
-                                <Label Content="{Binding Name}" />
-                            </DataTemplate>
-                        </ComboBox.ItemTemplate>
-                    </ComboBox>
-                </StackPanel>
+                <DockPanel LastChildFill="True">
+                    <StackPanel DockPanel.Dock="Top"
+                                Margin="12 24 12 12">
+                        <views:PathPicker DataContext="{Binding RootPathPicker}"
+                                          HorizontalAlignment="Stretch"
+                                          FontSize="14"
+                                          Margin="12 0" />
+
+                        <ComboBox DataContext="{Binding ProfileSelector}"
+                                  ItemsSource="{Binding Profiles}"
+                                  SelectedItem="{Binding SelectedProfile}"
+                                  HorizontalAlignment="Stretch"
+                                  Margin="12"
+                                  FontSize="14">
+                            <ComboBox.ItemTemplate>
+                                <DataTemplate>
+                                    <Label Content="{Binding Name}" />
+                                </DataTemplate>
+                            </ComboBox.ItemTemplate>
+                        </ComboBox>
+                    </StackPanel>
+                    
+                    <views:ModListManager DockPanel.Dock="Bottom"
+                                          HorizontalAlignment="Stretch"
+                                          VerticalAlignment="Stretch" />
+                </DockPanel>
+
             </Border>
 
             <!-- Right content -->
@@ -125,6 +135,6 @@
             </Border>
         </Grid>
         <views:Banner Height="48"
-                      VerticalAlignment="Top"/>
+                      VerticalAlignment="Top" />
     </Grid>
 </Window>

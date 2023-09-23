@@ -1,6 +1,6 @@
 ﻿using CommunityToolkit.Mvvm.Messaging;
 using Microsoft.Extensions.DependencyInjection;
-using MO2AutoPacker.Library.UIAbstractions;
+using MO2AutoPacker.Library.Abstractions.UI;
 using MO2AutoPacker.Library.ViewModels;
 
 namespace MO2AutoPacker.Library;
@@ -29,12 +29,13 @@ public class Services
     {
         if (_provider != null)
             throw new InvalidOperationException("Services have already been initialized");
-        
+
         IServiceCollection collection = new ServiceCollection()
             .AddSingleton(dispatcher)
             .AddSingleton<IMessenger>(new WeakReferenceMessenger())
             .AddSingleton<MainWindowViewModel>()
-            .AddSingleton<BannerViewModel>();
+            .AddSingleton<BannerViewModel>()
+            .AddSingleton<ModListManagerViewModel>();
         
         _provider = collection.BuildServiceProvider();
     }

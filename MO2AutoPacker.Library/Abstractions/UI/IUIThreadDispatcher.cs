@@ -1,4 +1,4 @@
-﻿namespace MO2AutoPacker.Library.UIAbstractions
+﻿namespace MO2AutoPacker.Library.Abstractions.UI
 {
     public interface IUIThreadDispatcher
     {
