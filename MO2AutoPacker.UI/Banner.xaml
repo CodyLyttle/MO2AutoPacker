@@ -9,48 +9,80 @@
              mc:Ignorable="d"
              d:DesignHeight="300" d:DesignWidth="300"
              HorizontalAlignment="Stretch"
-             d:DataContext="{x:Static local:DesignMocks.Banner}">
+             MinWidth="800"
+             MinHeight="400"
+             d:DataContext="{x:Static local:DesignMocks.Banner}"
+             x:Name="Root">
     <UserControl.InputBindings>
         <MouseBinding Gesture="LeftClick" Command="{Binding TransitionNextMessageCommand}" />
     </UserControl.InputBindings>
     <UserControl.Resources>
         <converter:BannerMessageTypeToColorConverter x:Key="ColorConverter" />
     </UserControl.Resources>
+    <UserControl.Style>
+        <!-- Prevent invisible banner from stealing mouse focus -->
+        <Style TargetType="FrameworkElement">
+            <Style.Triggers>
+                <Trigger Property="Opacity" Value="0">
+                    <Setter Property="IsHitTestVisible" Value="False" />
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+    </UserControl.Style>
 
-    <DockPanel x:Name="Test"
-                LastChildFill="True"
-               Background="{Binding Message.MessageType, 
-                            Converter={StaticResource ColorConverter}, 
-                            FallbackValue=Transparent}">
-        <Border DockPanel.Dock="Right"
-                attached:Dimensions.MatchWidthToHeight="True"
-                BorderBrush="Black"
-                BorderThickness="2"
-                CornerRadius="4"
-                Margin="6">
-            <Border.Style>
-                <Style TargetType="FrameworkElement">
+    <Grid Background="{Binding Message.MessageType, 
+                       Converter={StaticResource ColorConverter}, 
+                       FallbackValue=Transparent}">
+        
+        <!-- Add a minor highlight on hover -->
+        <Rectangle x:Name="RectWithHoverEffect" 
+                   Fill="White">
+            <Rectangle.Style>
+                <Style TargetType="Rectangle">
+                    <Setter Property="Opacity" Value="0" />
                     <Style.Triggers>
-                        <DataTrigger Binding="{Binding QueuedMessageCount}" Value="0">
-                            <Setter Property="Visibility" Value="Hidden" />
-                        </DataTrigger>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter Property="Opacity" Value="0.1" />
+                        </Trigger>
                     </Style.Triggers>
                 </Style>
-            </Border.Style>
+            </Rectangle.Style>
+        </Rectangle>
+        
+        <!-- Disable hit testing allows IsMouseOver events to reach RectWithHoverEffect -->
+        <DockPanel x:Name="Test"
+                   LastChildFill="True"
+                   IsHitTestVisible="False">
+            <Border DockPanel.Dock="Right"
+                    attached:Dimensions.MatchWidthToHeight="True"
+                    BorderBrush="Black"
+                    BorderThickness="2"
+                    CornerRadius="4"
+                    Margin="6">
+                <Border.Style>
+                    <Style TargetType="FrameworkElement">
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding QueuedMessageCount}" Value="0">
+                                <Setter Property="Visibility" Value="Hidden" />
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </Border.Style>
 
-            <TextBlock Text="{Binding QueuedMessageCount}"
-                       VerticalAlignment="Center"
-                       TextAlignment="Center"
-                       Padding="2"
-                       FontSize="12"
-                       FontWeight="SemiBold" />
-        </Border>
+                <TextBlock Text="{Binding QueuedMessageCount}"
+                           VerticalAlignment="Center"
+                           TextAlignment="Center"
+                           Padding="2"
+                           FontSize="12"
+                           FontWeight="SemiBold" />
+            </Border>
 
-        <Label DockPanel.Dock="Left"
-               VerticalAlignment="Center"
-               Content="{Binding Message.Message, FallbackValue=''}"
-               FontSize="14"
-               Margin="8 0"
-               FontWeight="SemiBold" />
-    </DockPanel>
+            <Label DockPanel.Dock="Left"
+                   VerticalAlignment="Center"
+                   Content="{Binding Message.Message, FallbackValue=''}"
+                   FontSize="14"
+                   Margin="8 0"
+                   FontWeight="SemiBold" />
+        </DockPanel>
+    </Grid>
 </UserControl>
