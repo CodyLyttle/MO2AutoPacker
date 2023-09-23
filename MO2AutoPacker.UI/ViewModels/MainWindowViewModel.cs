@@ -12,6 +12,7 @@ namespace MO2AutoPacker.UI.ViewModels;
 public partial class MainWindowViewModel : ViewModelBase, IRecipient<ProfileChangedMessage>
 {
     public PathPickerViewModel RootPathPicker { get; }
+    public ProfileSelectorViewModel ProfileSelector { get; }
     
     public List<string> ProfilePaths { get; private set; } = new();
 
@@ -20,6 +21,7 @@ public partial class MainWindowViewModel : ViewModelBase, IRecipient<ProfileChan
         messenger.Register(this);
         RootPathPicker = new PathPickerViewModel(messenger, PathKey.ModOrganizerRoot, "Mod Organizer 2 path");
         RootPathPicker.AddValidator(ModOrganizerPathValidator);
+        ProfileSelector = new ProfileSelectorViewModel(messenger);
     }
 
     // Delegate for RootPathPicker.
@@ -56,6 +58,6 @@ public partial class MainWindowViewModel : ViewModelBase, IRecipient<ProfileChan
 
     public void Receive(ProfileChangedMessage message)
     {
-        // TODO: Update UI to reflect current profile.
+        // TODO: Update UI state to reflect profile change.
     }
 }

@@ -13,6 +13,22 @@
         d:DataContext="{x:Static local:DesignMocks.MainWindow}">
     <StackPanel>
         <local:Banner Height="32"/>
-        <custom:PathPicker DataContext="{Binding RootPathPicker}"/>
+        <custom:PathPicker DataContext="{Binding RootPathPicker}"
+                           Width="300"
+                           HorizontalAlignment="Left"/>
+        
+        <ComboBox DataContext="{Binding ProfileSelector}"
+                  Width="300"
+                  HorizontalAlignment="Left"
+                  Margin="0 12"
+                  ItemsSource="{Binding Profiles}"
+                  SelectedItem="{Binding SelectedProfile}">
+            <ComboBox.ItemTemplate>
+                <DataTemplate>
+                    <Label Content="{Binding Name}"/>
+                </DataTemplate>
+            </ComboBox.ItemTemplate>
+        </ComboBox>
+        
     </StackPanel>
 </Window>

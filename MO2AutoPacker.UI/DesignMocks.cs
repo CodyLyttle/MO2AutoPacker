@@ -13,4 +13,6 @@ public static class DesignMocks
     public static readonly BannerViewModel Banner = new(MessengerDependency);
 
     public static readonly PathPickerViewModel PathPicker = new(MessengerDependency, PathKey.ModOrganizerRoot, "Watermark");
+
+    public static readonly ProfileSelectorViewModel ProfileSelector = new(MessengerDependency);
 }
