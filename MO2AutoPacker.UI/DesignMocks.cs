@@ -1,6 +1,6 @@
 ﻿using CommunityToolkit.Mvvm.Messaging;
-using MO2AutoPacker.Library.Abstractions.UI;
 using MO2AutoPacker.Library.Messages;
+using MO2AutoPacker.Library.Services;
 using MO2AutoPacker.Library.ViewModels;
 using MO2AutoPacker.UI.Implementations;
 

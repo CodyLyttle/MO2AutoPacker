@@ -38,8 +38,14 @@
         </DataTemplate>
     </UserControl.Resources>
 
-    <Grid>
-        <ListView ItemsSource="{Binding ModList.Items, FallbackValue=''}"
+    <DockPanel LastChildFill="True">
+        <Button DockPanel.Dock="Bottom"
+                Content="Pack"
+                Command="{Binding PackFilesCommand}"
+                Width="120"/>
+        
+        <ListView DockPanel.Dock="Top"
+                  ItemsSource="{Binding ModList.Items, FallbackValue=''}"
                   Background="Transparent">
             <ListView.ItemContainerStyle>
                 <Style TargetType="ListBoxItem">
@@ -47,5 +53,5 @@
                 </Style>
             </ListView.ItemContainerStyle>
         </ListView>
-    </Grid>
+    </DockPanel>
 </UserControl>

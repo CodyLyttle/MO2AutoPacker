@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Windows.Threading;
-using MO2AutoPacker.Library.Abstractions.UI;
+using MO2AutoPacker.Library.Services;
 
 namespace MO2AutoPacker.UI.Implementations;
 

@@ -1,6 +1,6 @@
 ﻿using CommunityToolkit.Mvvm.Messaging;
 using Microsoft.Extensions.DependencyInjection;
-using MO2AutoPacker.Library.Abstractions.UI;
+using MO2AutoPacker.Library.Services;
 using MO2AutoPacker.Library.ViewModels;
 
 namespace MO2AutoPacker.Library;
@@ -9,25 +9,22 @@ namespace MO2AutoPacker.Library;
 /// Basic dependency bootstrapper.
 /// </summary>
 // Subject to change if further features are required, such as swapping dependencies at run-time.
-public class Services
+public class ServiceProvider
 {
-    private static IServiceProvider? _provider;
-
-    public static IServiceProvider Provider
+    private static IServiceProvider? _services;
+    
+    public static T GetService<T>() where T : notnull
     {
-        get
-        {
-            if (_provider == null)
-                throw new InvalidOperationException(
-                    $"The service provider is uninitialized");
+        if (_services == null)
+            throw new InvalidOperationException(
+                "Attempted to retrieve a service before initializing the service provider");
 
-            return _provider;
-        }
+        return _services.GetRequiredService<T>();
     }
     
     public static void Initialize(IUIThreadDispatcher dispatcher)
     {
-        if (_provider != null)
+        if (_services != null)
             throw new InvalidOperationException("Services have already been initialized");
 
         IServiceCollection collection = new ServiceCollection()
@@ -37,6 +34,6 @@ public class Services
             .AddSingleton<BannerViewModel>()
             .AddSingleton<ModListManagerViewModel>();
         
-        _provider = collection.BuildServiceProvider();
+        _services = collection.BuildServiceProvider();
     }
 }

@@ -41,13 +41,14 @@ public partial class ProfileSelectorViewModel : ViewModelBase, IRecipient<PathCh
         if (message.Key != PathKey.ModOrganizerRoot)
             return;
 
-        // Message sender has already verified 'profiles' exists.
-        _profilesPath = Path.Combine(message.Path, "profiles");
+        // Path picker has already validated 'profiles' path.
+        string rootPath = message.Path;
+        _profilesPath = Path.Combine(rootPath, "profiles");
         
         SelectedProfile = null;
         Profiles = Directory.EnumerateDirectories(_profilesPath)
             .Select(Path.GetFileName)
-            .Select(fn => new Profile(_profilesPath, fn!))
+            .Select(fn => new Profile(rootPath, fn!))
             .ToList();
         
         OnPropertyChanged(nameof(Profiles));

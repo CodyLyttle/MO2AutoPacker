@@ -1,9 +1,6 @@
-﻿using System;
-using System.ComponentModel;
+﻿using System.ComponentModel;
 using System.Windows.Controls;
 using System.Windows.Media.Animation;
-using Microsoft.Extensions.DependencyInjection;
-using MO2AutoPacker.Library;
 using MO2AutoPacker.Library.ViewModels;
 
 namespace MO2AutoPacker.UI.Views;
@@ -16,13 +13,10 @@ public partial class Banner : UserControl
     public Banner()
     {
         InitializeComponent();
-        _viewmodel = Services.Provider.GetService<BannerViewModel>()
-                     ?? throw new InvalidOperationException(
-                         $"Service provider is missing dependency '{nameof(BannerViewModel)}");
-        
+        _viewmodel = ViewModelProvider.GetViewModel<BannerViewModel>();
+        _viewmodel.PropertyChanged += OnPropertyChanged;
         DataContext = _viewmodel;
         Opacity = GetTargetOpacity();
-        _viewmodel.PropertyChanged += OnPropertyChanged;
     }
 
     private void OnPropertyChanged(object? sender, PropertyChangedEventArgs e)

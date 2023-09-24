@@ -3,11 +3,13 @@
 public class Mod : IModListItem
 {
     public string Name { get; set; }
+    public string Path { get; set; }
     public bool IsEnabled { get; set; }
 
-    public Mod(string name, bool isEnabled)
+    public Mod(string name, string path, bool isEnabled)
     {
         Name = name;
+        Path = path;
         IsEnabled = isEnabled;
     }
 

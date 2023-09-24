@@ -1,8 +1,8 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using CommunityToolkit.Mvvm.Messaging;
-using MO2AutoPacker.Library.Abstractions.UI;
 using MO2AutoPacker.Library.Messages;
+using MO2AutoPacker.Library.Services;
 
 namespace MO2AutoPacker.Library.ViewModels;
 

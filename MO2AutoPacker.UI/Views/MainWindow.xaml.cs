@@ -1,7 +1,7 @@
 ﻿using System.Windows;
 using MO2AutoPacker.Library.ViewModels;
 
-namespace MO2AutoPacker.UI
+namespace MO2AutoPacker.UI.Views
 {
     public partial class MainWindow : Window
     {

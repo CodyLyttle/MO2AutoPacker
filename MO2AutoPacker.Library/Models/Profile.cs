@@ -2,12 +2,14 @@
 
 public class Profile
 {
+    public string RootPath { get; }
     public string Name { get; }
     public string Path { get; }
 
-    public Profile(string profilesPath, string profileName)
+    public Profile(string rootPath, string name)
     {
-        Path = System.IO.Path.Combine(profilesPath, profileName);
-        Name = profileName;
+        RootPath = rootPath;
+        Path = System.IO.Path.Combine(rootPath, "profiles", name);
+        Name = name;
     }
 }
