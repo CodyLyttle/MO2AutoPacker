@@ -2,10 +2,11 @@
 using MO2AutoPacker.Library.Models;
 
 [assembly: InternalsVisibleTo("MO2AutoPacker.Library.Tests")]
+
 namespace MO2AutoPacker.Library.Services.Implementations;
 
 // Keeps track of loose asset files and the mods that they belong to.
-// Imitates MO2's virtual file system by overwriting conflicting asset paths.
+// Imitates MO2's virtual file system by overwriting conflicting assets.
 internal class VirtualAssetRepository : IVirtualAssetRepository
 {
     private readonly object _fileLock = new();
@@ -17,10 +18,10 @@ internal class VirtualAssetRepository : IVirtualAssetRepository
         "textures",
     };
 
-    // eg. Relative path -> ModPath
-    // ["textures/textureA.dds"]= "C:/Mods/ModA/"
-    private readonly Dictionary<string, string> _filePathRepository = new();
-    
+    // eg. Relative path -> mod directory.
+    // ["textures/textureA.dds"]= "C:/MO2/mods/SomeModName/"
+    private readonly Dictionary<string, DirectoryInfo> _assetRepository = new();
+
     public int FileCount { get; private set; }
 
     // Max Oblivion BSA size is 2GB.
@@ -30,30 +31,26 @@ internal class VirtualAssetRepository : IVirtualAssetRepository
     /// <summary>
     /// Used by test methods to verify internal state. 
     /// </summary>
-    /// <returns>Pairs with Key: RelativeFilePath Value: ModDirectoryPath</returns>
-    internal IEnumerable<KeyValuePair<string, string>> EnumerateFilePaths()
+    /// <returns>A array of FileInfo objects representing the assets in the repository</returns>
+    internal FileInfo[] GetAssetFiles()
     {
         lock (_fileLock)
         {
-            using IEnumerator<KeyValuePair<string, string>> enumerator = _filePathRepository.GetEnumerator();
-            while (enumerator.MoveNext())
-                yield return enumerator.Current;
+            return _assetRepository
+                .Select(GetFile)
+                .ToArray();
         }
     }
 
     public void AddMod(Mod mod)
     {
-        lock (_fileLock) // Prevent creation of archives while adding file paths.
+        lock (_fileLock)
         {
-            DirectoryInfo modDir = new DirectoryInfo(mod.Path);
-            if (!modDir.Exists)
-                throw new FileNotFoundException("Missing mod directory", mod.Path);
-
-            foreach (DirectoryInfo subDir in GetAssetDirectories(modDir))
+            foreach (DirectoryInfo subDir in GetAssetDirectories(mod.Directory))
             {
-                foreach (string relativeFilePath in GetFilesRecursively(subDir, subDir.Name))
+                foreach (string relativeAssetPath in GetAssetsRecursively(subDir, subDir.Name))
                 {
-                    _filePathRepository[relativeFilePath] = mod.Path;
+                    _assetRepository[relativeAssetPath] = mod.Directory;
                     FileCount++;
                 }
             }
@@ -70,12 +67,12 @@ internal class VirtualAssetRepository : IVirtualAssetRepository
     }
 
     // TODO: Should we validate the file extension? .dds, .nif, etc...
-    private static IEnumerable<string> GetFilesRecursively(DirectoryInfo currentDir, string relativeDir)
+    private static IEnumerable<string> GetAssetsRecursively(DirectoryInfo currentDir, string relativeDir)
     {
         foreach (DirectoryInfo subDir in currentDir.GetDirectories())
         {
             string updatedRelativeDir = Path.Combine(relativeDir, subDir.Name);
-            foreach (string relativeFilePath in GetFilesRecursively(subDir, updatedRelativeDir))
+            foreach (string relativeFilePath in GetAssetsRecursively(subDir, updatedRelativeDir))
                 yield return relativeFilePath;
         }
 
@@ -86,23 +83,21 @@ internal class VirtualAssetRepository : IVirtualAssetRepository
         }
     }
 
+    // TODO: Ensure exceptions are handled and converted to banner messages by the calling viewmodel.
     public IEnumerable<VirtualArchive> CreateVirtualArchives()
     {
-        lock (_fileLock) // Prevent modification of file paths while creating archives.
+        lock (_fileLock)
         {
-            using IEnumerator<KeyValuePair<string, string>> pathPairs = _filePathRepository.GetEnumerator();
             VirtualArchive archive = new(ArchiveSizeInBytes);
 
+            using var pathPairs = _assetRepository.GetEnumerator();
             while (pathPairs.MoveNext())
             {
-                string filePath = Path.Combine(pathPairs.Current.Value, pathPairs.Current.Key);
-                FileInfo fileInfo = new FileInfo(filePath);
-                if (!fileInfo.Exists)
-                    throw new FileNotFoundException("Missing asset file", filePath);
-
+                FileInfo fileInfo = GetFile(pathPairs.Current);
                 long size = fileInfo.Length;
                 if (size > ArchiveSizeInBytes)
-                    throw new InvalidOperationException($"File exceeds the maximum BSA file size '{fileInfo.Name}'");
+                    throw new InvalidOperationException(
+                        $"File exceeds the maximum BSA file size '{fileInfo.Name}'");
 
                 if (size > archive.VacantBytes)
                 {
@@ -116,5 +111,15 @@ internal class VirtualAssetRepository : IVirtualAssetRepository
             if (archive.FileCount > 0)
                 yield return archive;
         }
+    }
+
+    private static FileInfo GetFile(KeyValuePair<string, DirectoryInfo> pathPair)
+    {
+        FileInfo file = new(Path.Combine(pathPair.Value.FullName, pathPair.Key));
+        if (!file.Exists)
+            throw new FileNotFoundException(
+                "A file from the virtual asset repository has been moved or deleted", file.FullName);
+
+        return file;
     }
 }

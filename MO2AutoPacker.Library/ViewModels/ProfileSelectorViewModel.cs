@@ -5,16 +5,15 @@ using MO2AutoPacker.Library.Models;
 
 namespace MO2AutoPacker.Library.ViewModels;
 
-// TODO: Respond to file system changes such as profile added/removed.
 public partial class ProfileSelectorViewModel : ViewModelBase, IRecipient<PathChangedMessage>
-{   
+{
     private readonly IMessenger _messenger;
-    private string? _profilesPath;
 
     [ObservableProperty]
-    private List<Profile> _profiles = new();
+    private Profile[] _profiles = Array.Empty<Profile>();
 
     private Profile? _selectedProfile;
+
     public Profile? SelectedProfile
     {
         get => _selectedProfile;
@@ -28,39 +27,38 @@ public partial class ProfileSelectorViewModel : ViewModelBase, IRecipient<PathCh
         }
     }
 
-    public string[] ProfileNames => ReadProfileNames(_profilesPath);
-    
+    public IEnumerable<string> ProfileNames => Profiles.Select(p => p.Name);
+
     public ProfileSelectorViewModel(IMessenger messenger)
     {
         _messenger = messenger;
-        _messenger.Register(this);        
+        _messenger.Register(this);
     }
-    
+
     public void Receive(PathChangedMessage message)
     {
         if (message.Key != PathKey.ModOrganizerRoot)
             return;
 
-        // Path picker has already validated 'profiles' path.
-        string rootPath = message.Path;
-        _profilesPath = Path.Combine(rootPath, "profiles");
-        
+        // Clear profiles early to ensure the UI is wiped in the event of an error.
+        Profiles = Array.Empty<Profile>();
         SelectedProfile = null;
-        Profiles = Directory.EnumerateDirectories(_profilesPath)
-            .Select(Path.GetFileName)
-            .Select(fn => new Profile(rootPath, fn!))
-            .ToList();
+
+        string profilesPath = Path.Combine(message.Path, "profiles");
+        DirectoryInfo profilesDir = new DirectoryInfo(profilesPath);
+        if (!profilesDir.Exists)
+        {
+            _messenger.Send(new BannerMessage(BannerMessage.Type.Error,
+                "Invalid MO2 directory - missing subdirectory 'profiles'"));
+        }
+        else
+        {
+            Profiles = profilesDir.EnumerateDirectories()
+                .Select(dir => new Profile(dir))
+                .ToArray();
+        }
         
+        // Update the UI regardless of profile read outcome.
         OnPropertyChanged(nameof(Profiles));
-    }
-
-    private static string[] ReadProfileNames(string? path)
-    {
-        if (path == null)
-            return Array.Empty<string>();
-
-        return Directory.EnumerateDirectories(path)
-            .Select(Path.GetFileName)
-            .ToArray()!;
     }
 }

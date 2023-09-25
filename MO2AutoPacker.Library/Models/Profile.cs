@@ -2,14 +2,12 @@
 
 public class Profile
 {
-    public string RootPath { get; }
     public string Name { get; }
-    public string Path { get; }
+    public DirectoryInfo Directory { get; }
 
-    public Profile(string rootPath, string name)
+    public Profile(DirectoryInfo directory)
     {
-        RootPath = rootPath;
-        Path = System.IO.Path.Combine(rootPath, "profiles", name);
-        Name = name;
+        Name = directory.Name;
+        Directory = directory;
     }
 }

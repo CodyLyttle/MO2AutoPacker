@@ -42,6 +42,7 @@ public partial class PathPickerViewModel : ViewModelBase
         else
         {
             _messenger.Send(new BannerMessage(BannerMessage.Type.Error, result.Message));
+            Path = null;
         }
     }
 

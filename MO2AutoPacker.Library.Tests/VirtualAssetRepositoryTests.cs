@@ -4,6 +4,7 @@ using MO2AutoPacker.Library.Tests.Helpers;
 
 namespace MO2AutoPacker.Library.Tests;
 
+// TODO: Refactor DRY.
 public sealed class VirtualAssetRepositoryTests : IDisposable
 {
     private readonly VirtualAssetRepository _testTarget = new();
@@ -11,15 +12,14 @@ public sealed class VirtualAssetRepositoryTests : IDisposable
 
     public void Dispose() => _modDir.Dispose();
 
-    private static List<string> GetFilePaths(VirtualAssetRepository vfs)
+    private static Mod CreateMod(TemporaryDirectory rootDir, bool isEnabled = false)
     {
-        return vfs.EnumerateFilePaths()
-            .Select(pathPair => Path.Combine(pathPair.Value, pathPair.Key))
-            .ToList();
-    }
+        var modName = Guid.NewGuid().ToString();
+        string modPath = Path.Combine(rootDir.Root.Directory.FullName, modName);
 
-    private static Mod CreateMod(TemporaryDirectory modDirectory, bool isEnabled = false)
-        => new(Guid.NewGuid().ToString(), modDirectory.Root.Path, isEnabled);
+        DirectoryInfo modDir = new(modPath);
+        return new Mod(modName, modDir, isEnabled);
+    }
 
     [Fact]
     public void AddMod_ShouldAddFilePathsFromAssetFolders()
@@ -31,6 +31,7 @@ public sealed class VirtualAssetRepositoryTests : IDisposable
         foreach (string folderName in VirtualAssetRepository.AssetFolderNames)
         {
             _modDir.Root
+                .AddFolder(mod.Name)
                 .AddFolder(folderName)
                 .AddFile(out string filePath);
 
@@ -42,9 +43,10 @@ public sealed class VirtualAssetRepositoryTests : IDisposable
 
         // Assert
         // Ensure vfs repository contains the path of each asset file exactly once.
-        List<string> fileRepository = GetFilePaths(_testTarget);
-        Assert.Equal(filePaths.Count, fileRepository.Count);
-        Assert.Empty(filePaths.Except(fileRepository));
+        FileInfo[] assetFiles = _testTarget.GetAssetFiles();
+        string[] assetPaths = assetFiles.Select(a => a.FullName).ToArray();
+        Assert.Equal(filePaths.Count, assetFiles.Length);
+        Assert.Empty(filePaths.Except(assetPaths));
     }
 
     [Fact]
@@ -53,6 +55,7 @@ public sealed class VirtualAssetRepositoryTests : IDisposable
         // Arrange
         Mod mod = CreateMod(_modDir);
         _modDir.Root
+            .AddFolder(mod.Name)
             .AddFolder(VirtualAssetRepository.AssetFolderNames[0])
             .AddFolder("nested")
             .AddFile("file.txt", out string expectedPath);
@@ -61,9 +64,9 @@ public sealed class VirtualAssetRepositoryTests : IDisposable
         _testTarget.AddMod(mod);
 
         // Assert
-        List<string> fileRepository = GetFilePaths(_testTarget);
-        Assert.Single(fileRepository);
-        Assert.Equal(expectedPath, fileRepository[0]);
+        FileInfo[] assetFiles = _testTarget.GetAssetFiles();
+        Assert.Single(assetFiles);
+        Assert.Equal(expectedPath, assetFiles[0].FullName);
     }
 
     [Fact]
@@ -75,12 +78,14 @@ public sealed class VirtualAssetRepositoryTests : IDisposable
 
         Mod mod = CreateMod(_modDir);
         _modDir.Root
+            .AddFolder(mod.Name)
             .AddFolder(folder)
             .AddFile(fileName);
 
         using TemporaryDirectory otherModDir = new();
         Mod otherMod = CreateMod(otherModDir);
         otherModDir.Root
+            .AddFolder(otherMod.Name)
             .AddFolder(folder)
             .AddFile(fileName, out string expectedPath);
 
@@ -89,9 +94,9 @@ public sealed class VirtualAssetRepositoryTests : IDisposable
         _testTarget.AddMod(otherMod);
 
         // Assert
-        List<string> fileRepository = GetFilePaths(_testTarget);
-        Assert.Single(fileRepository);
-        Assert.Equal(expectedPath, fileRepository.First());
+        FileInfo[] assetFiles = _testTarget.GetAssetFiles();
+        Assert.Single(assetFiles);
+        Assert.Equal(expectedPath, assetFiles.First().FullName);
     }
 
     [Fact]
@@ -100,6 +105,7 @@ public sealed class VirtualAssetRepositoryTests : IDisposable
         // Arrange
         Mod mod = CreateMod(_modDir);
         _modDir.Root
+            .AddFolder(mod.Name)
             .AddFile("fileA.txt")
             .AddFolder("NonAsset")
             .AddFile("fileB.txt")
@@ -110,44 +116,50 @@ public sealed class VirtualAssetRepositoryTests : IDisposable
         _testTarget.AddMod(mod);
 
         // Assert
-        Assert.Empty(GetFilePaths(_testTarget));
+        Assert.Empty(_testTarget.GetAssetFiles());
     }
 
     [Fact]
-    public void AddMod_ShouldThrowFileNotFoundException_WhenInvalidModsPath()
+    public void AddMod_ShouldThrowDirectoryNotFoundException_WhenInvalidModDirectory()
     {
-        Mod modWithBadPath = new Mod("mod", Guid.NewGuid().ToString(), false);
-        Assert.Throws<FileNotFoundException>(() => _testTarget.AddMod(modWithBadPath));
+        // Don't create the mod folder in the temporary directory.
+        Mod fakeMod = CreateMod(_modDir);
+        Assert.Throws<DirectoryNotFoundException>(() => _testTarget.AddMod(fakeMod));
     }
 
     [Fact]
     public void CreateVirtualArchives_ShouldReturnSingleArchive_WhenRepositoryFitsInSingleArchive()
     {
         // Arrange
+        Mod mod = CreateMod(_modDir);
         _modDir.Root
+            .AddFolder(mod.Name)
             .AddFolder(VirtualAssetRepository.AssetFolderNames[0])
             .AddFile("fileA.txt")
             .AddFolder("nested")
             .AddFile("fileB.txt");
 
-        _testTarget.AddMod(CreateMod(_modDir));
+        _testTarget.AddMod(mod);
 
         // Act
         VirtualArchive archive = _testTarget.CreateVirtualArchives().First();
 
         // Assert
-        Assert.Equal(GetFilePaths(_testTarget), archive.EnumerateFilePaths().ToArray());
+        string[] assetPaths = _testTarget.GetAssetFiles().Select(a => a.FullName).ToArray();
+        Assert.Equal(assetPaths, archive.EnumerateFilePaths().ToArray());
     }
 
     [Fact]
     public void CreateVirtualArchives_ShouldReturnArchiveWithSpecifiedSize()
     {
         // Arrange
+        Mod mod = CreateMod(_modDir);
         _modDir.Root
+            .AddFolder(mod.Name)
             .AddFolder(VirtualAssetRepository.AssetFolderNames[0])
             .AddFile();
 
-        _testTarget.AddMod(CreateMod(_modDir));
+        _testTarget.AddMod(mod);
         _testTarget.ArchiveSizeInBytes = 512;
 
         // Act
@@ -167,14 +179,16 @@ public sealed class VirtualAssetRepositoryTests : IDisposable
     public void CreateVirtualArchives_ShouldReturnMultipleArchives_WhenRepositoryTooLargeForSingleArchive()
     {
         // Arrange
+        Mod mod = CreateMod(_modDir);
         _testTarget.ArchiveSizeInBytes = 256;
         _modDir.Root
+            .AddFolder(mod.Name)
             .AddFolder(VirtualAssetRepository.AssetFolderNames[0])
             .AddFile(100)
             .AddFile(100)
             .AddFile(100);
 
-        _testTarget.AddMod(CreateMod(_modDir));
+        _testTarget.AddMod(mod);
 
         // Act
         VirtualArchive[] archives = _testTarget.CreateVirtualArchives().ToArray();
@@ -189,11 +203,13 @@ public sealed class VirtualAssetRepositoryTests : IDisposable
     public void CreateVirtualArchives_ShouldThrowFileNotFoundException_WhenRepositoryFileDeleted()
     {
         // Arrange
+        Mod mod = CreateMod(_modDir);
         _modDir.Root
+            .AddFolder(mod.Name)
             .AddFolder(VirtualAssetRepository.AssetFolderNames[0])
             .AddFile("toDelete.txt", out string filePath);
 
-        _testTarget.AddMod(CreateMod(_modDir));
+        _testTarget.AddMod(mod);
         File.Delete(filePath);
 
         // Assert
@@ -204,12 +220,14 @@ public sealed class VirtualAssetRepositoryTests : IDisposable
     public void CreateVirtualArchives_ShouldThrowInvalidOperationException_WhenFileSizeExceedsArchiveSize()
     {
         // Arrange
+        Mod mod = CreateMod(_modDir);
         _testTarget.ArchiveSizeInBytes = 256;
         _modDir.Root
+            .AddFolder(mod.Name)
             .AddFolder(VirtualAssetRepository.AssetFolderNames[0])
             .AddFile(512);
 
-        _testTarget.AddMod(CreateMod(_modDir));
+        _testTarget.AddMod(mod);
 
         // Assert
         Assert.Throws<InvalidOperationException>(() => _testTarget.CreateVirtualArchives().ToArray());

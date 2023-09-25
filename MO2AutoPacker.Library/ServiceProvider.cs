@@ -1,6 +1,7 @@
 ﻿using CommunityToolkit.Mvvm.Messaging;
 using Microsoft.Extensions.DependencyInjection;
 using MO2AutoPacker.Library.Services;
+using MO2AutoPacker.Library.Services.Implementations;
 using MO2AutoPacker.Library.ViewModels;
 
 namespace MO2AutoPacker.Library;
@@ -12,7 +13,7 @@ namespace MO2AutoPacker.Library;
 public class ServiceProvider
 {
     private static IServiceProvider? _services;
-    
+
     public static T GetService<T>() where T : notnull
     {
         if (_services == null)
@@ -21,7 +22,7 @@ public class ServiceProvider
 
         return _services.GetRequiredService<T>();
     }
-    
+
     public static void Initialize(IUIThreadDispatcher dispatcher)
     {
         if (_services != null)
@@ -30,10 +31,11 @@ public class ServiceProvider
         IServiceCollection collection = new ServiceCollection()
             .AddSingleton(dispatcher)
             .AddSingleton<IMessenger>(new WeakReferenceMessenger())
+            .AddSingleton<IVirtualAssetRepository>(new VirtualAssetRepository())
             .AddSingleton<MainWindowViewModel>()
             .AddSingleton<BannerViewModel>()
             .AddSingleton<ModListManagerViewModel>();
-        
+
         _services = collection.BuildServiceProvider();
     }
 }
