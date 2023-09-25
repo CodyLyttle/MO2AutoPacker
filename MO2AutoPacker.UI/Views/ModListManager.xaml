@@ -4,36 +4,18 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:models="clr-namespace:MO2AutoPacker.Library.Models;assembly=MO2AutoPacker.Library"
+             xmlns:controls="clr-namespace:MO2AutoPacker.UI.Controls"
              xmlns:root="clr-namespace:MO2AutoPacker.UI"
              mc:Ignorable="d"
              d:DesignHeight="300" d:DesignWidth="300"
              d:DataContext="{x:Static root:DesignMocks.ModListManager}">
     <UserControl.Resources>
         <!-- List item templates -->
-        <DataTemplate DataType="{x:Type models:Mod}">
-            <Grid HorizontalAlignment="Stretch">
-                <Label Content="{Binding Name}"
-                       HorizontalAlignment="Stretch"
-                       FontSize="12">
-                    <Label.Style>
-                        <Style TargetType="Control">
-                            <Setter Property="Background" Value="#66FF5555" />
-                            <Style.Triggers>
-                                <DataTrigger Binding="{Binding IsEnabled}" Value="true">
-                                    <Setter Property="Background" Value="#6655FF55" />
-                                </DataTrigger>
-                            </Style.Triggers>
-                        </Style>
-                    </Label.Style>
-                </Label>
-            </Grid>
-        </DataTemplate>
         <DataTemplate DataType="{x:Type models:ModSeparator}">
-            <Label Content="{Binding Name}"
-                   HorizontalAlignment="Stretch"
-                   Background="LightGray"
-                   FontSize="14"
-                   FontWeight="Bold" />
+            <controls:ListItemModSeparator Height="32" />
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type models:Mod}">
+            <controls:ListItemMod Height="32" />
         </DataTemplate>
     </UserControl.Resources>
 
@@ -43,12 +25,14 @@
                 Command="{Binding PackFilesCommand}"
                 Width="120" />
 
-        <ListView DockPanel.Dock="Top"
-                  ItemsSource="{Binding ModList.Items, FallbackValue=''}"
-                  Background="Transparent">
+        <ListView ItemsSource="{Binding ModList.Items, FallbackValue=''}"
+                  Background="Transparent"
+                  ScrollViewer.HorizontalScrollBarVisibility="Disabled">
             <ListView.ItemContainerStyle>
                 <Style TargetType="ListBoxItem">
                     <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+                    <Setter Property="Padding" Value="0" />
+                    <Setter Property="Margin" Value="0" />
                 </Style>
             </ListView.ItemContainerStyle>
         </ListView>

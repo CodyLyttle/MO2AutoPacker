@@ -1,5 +1,7 @@
-﻿using CommunityToolkit.Mvvm.Messaging;
+﻿using System.IO;
+using CommunityToolkit.Mvvm.Messaging;
 using MO2AutoPacker.Library.Messages;
+using MO2AutoPacker.Library.Models;
 using MO2AutoPacker.Library.Services;
 using MO2AutoPacker.Library.ViewModels;
 using MO2AutoPacker.UI.Implementations;
@@ -20,4 +22,8 @@ public static class DesignMocks
     public static readonly ProfileSelectorViewModel ProfileSelector = new(Messenger);
 
     public static readonly ModListManagerViewModel ModListManager = new(Messenger);
+
+    public static readonly Mod Mod = new("My Mod", new DirectoryInfo(Directory.GetCurrentDirectory()), true);
+
+    public static readonly ModSeparator ModSeparator = new("~~Mod Separator~~");
 }
