@@ -28,12 +28,13 @@
         </Style>
     </UserControl.Style>
 
-    <Grid Background="{Binding Message.MessageType, 
+    <Grid
+        Background="{Binding Message.MessageType, 
                        Converter={StaticResource ColorConverter}, 
                        FallbackValue=Transparent}">
-        
+
         <!-- Add a minor highlight on hover -->
-        <Rectangle x:Name="RectWithHoverEffect" 
+        <Rectangle x:Name="RectWithHoverEffect"
                    Fill="White">
             <Rectangle.Style>
                 <Style TargetType="Rectangle">
@@ -46,7 +47,7 @@
                 </Style>
             </Rectangle.Style>
         </Rectangle>
-        
+
         <!-- Disable hit testing allows IsMouseOver events to reach RectWithHoverEffect -->
         <DockPanel x:Name="Test"
                    LastChildFill="True"

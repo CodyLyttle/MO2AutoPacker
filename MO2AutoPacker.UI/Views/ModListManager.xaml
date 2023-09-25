@@ -3,7 +3,6 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-             xmlns:local="clr-namespace:MO2AutoPacker.UI.Views"
              xmlns:models="clr-namespace:MO2AutoPacker.Library.Models;assembly=MO2AutoPacker.Library"
              xmlns:root="clr-namespace:MO2AutoPacker.UI"
              mc:Ignorable="d"
@@ -18,10 +17,10 @@
                        FontSize="12">
                     <Label.Style>
                         <Style TargetType="Control">
-                            <Setter Property="Background" Value="#66FF5555"></Setter>
+                            <Setter Property="Background" Value="#66FF5555" />
                             <Style.Triggers>
                                 <DataTrigger Binding="{Binding IsEnabled}" Value="true">
-                                    <Setter Property="Background" Value="#6655FF55"></Setter>
+                                    <Setter Property="Background" Value="#6655FF55" />
                                 </DataTrigger>
                             </Style.Triggers>
                         </Style>
@@ -42,14 +41,14 @@
         <Button DockPanel.Dock="Bottom"
                 Content="Pack"
                 Command="{Binding PackFilesCommand}"
-                Width="120"/>
-        
+                Width="120" />
+
         <ListView DockPanel.Dock="Top"
                   ItemsSource="{Binding ModList.Items, FallbackValue=''}"
                   Background="Transparent">
             <ListView.ItemContainerStyle>
                 <Style TargetType="ListBoxItem">
-                    <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+                    <Setter Property="HorizontalContentAlignment" Value="Stretch" />
                 </Style>
             </ListView.ItemContainerStyle>
         </ListView>

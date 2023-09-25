@@ -57,7 +57,7 @@ public class PackedMetaDataTests
         {
             new("archive=", "MyArchive"),
             new("size=", "1024"),
-            new("time=", "09/22/2023 02:04:31"),
+            new("time=", "09/22/2023 02:04:31")
         };
 
         var headers = new (string Key, string Value)[headerCount];
@@ -94,9 +94,9 @@ public class PackedMetaDataTests
     {
         // Arrange
         const string input = "archive=MyArchive\r\n" +
-                             "size=NotAnInt32\r\n" + 
+                             "size=NotAnInt32\r\n" +
                              "time=09/22/2023 02:04:31\r\n";
-        
+
         // Act/Assert
         Action act = () => PackedMetaData.ReadFromString(input);
         act.Should().Throw<FormatException>()
@@ -108,9 +108,9 @@ public class PackedMetaDataTests
     {
         // Arrange
         const string input = "archive=MyArchive\r\n" +
-                             "size=1024\r\n" + 
+                             "size=1024\r\n" +
                              "time=NotADateTime\r\n";
-        
+
         // Act/Assert
         Action act = () => PackedMetaData.ReadFromString(input);
         act.Should().Throw<FormatException>()
@@ -122,9 +122,9 @@ public class PackedMetaDataTests
     {
         // Arrange
         const string input = "archive=MyArchive\r\n" +
-                             "size=1024\r\n" + 
+                             "size=1024\r\n" +
                              "time=09/22/2023 02:04:31\r\n";
-        
+
         // Act/Assert
         Action act = () => PackedMetaData.ReadFromString(input);
         act.Should().Throw<FormatException>()

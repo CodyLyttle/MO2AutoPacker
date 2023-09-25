@@ -11,10 +11,10 @@ public sealed class ModListManagerViewModelTests : IDisposable
     private const string ModListFileName = "modlist.txt";
 
     private readonly IMessenger _messenger;
-    private readonly ModListManagerViewModel _testTarget;
-    private readonly TemporaryDirectory _tempDir;
     private readonly TemporaryFolder _modsFolder;
     private readonly TemporaryFolder _profilesFolder;
+    private readonly TemporaryDirectory _tempDir;
+    private readonly ModListManagerViewModel _testTarget;
 
     public ModListManagerViewModelTests()
     {

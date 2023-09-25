@@ -7,8 +7,8 @@ namespace MO2AutoPacker.Library.Tests;
 // TODO: Refactor DRY.
 public sealed class VirtualAssetRepositoryTests : IDisposable
 {
-    private readonly VirtualAssetRepository _testTarget = new();
     private readonly TemporaryDirectory _modDir = new();
+    private readonly VirtualAssetRepository _testTarget = new();
 
     public void Dispose() => _modDir.Dispose();
 
@@ -170,10 +170,8 @@ public sealed class VirtualAssetRepositoryTests : IDisposable
     }
 
     [Fact]
-    public void CreateVirtualArchives_ShouldNotReturnArchive_WhenRepositoryEmpty()
-    {
+    public void CreateVirtualArchives_ShouldNotReturnArchive_WhenRepositoryEmpty() =>
         Assert.Empty(_testTarget.CreateVirtualArchives().ToArray());
-    }
 
     [Fact]
     public void CreateVirtualArchives_ShouldReturnMultipleArchives_WhenRepositoryTooLargeForSingleArchive()

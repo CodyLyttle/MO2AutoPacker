@@ -1,7 +1,6 @@
-﻿namespace MO2AutoPacker.Library.Services
+﻿namespace MO2AutoPacker.Library.Services;
+
+public interface IUIThreadDispatcher
 {
-    public interface IUIThreadDispatcher
-    {
-        void Invoke(Action action);
-    }
+    void Invoke(Action action);
 }

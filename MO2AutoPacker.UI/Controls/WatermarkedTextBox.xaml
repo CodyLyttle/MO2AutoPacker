@@ -3,7 +3,6 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-             xmlns:local="clr-namespace:MO2AutoPacker.UI.Controls"
              mc:Ignorable="d"
              d:DesignHeight="32" d:DesignWidth="300"
              x:Name="Root">
@@ -13,7 +12,7 @@
                  FontSize="{Binding FontSize, ElementName=Root}"
                  HorizontalAlignment="Stretch"
                  Padding="4 2"
-                 VerticalContentAlignment="Stretch"/>
+                 VerticalContentAlignment="Stretch" />
         <!-- Use a TextBlock as a watermark -->
         <!-- Extra horizontal padding to match TextBox layout -->
         <TextBlock Text="{Binding Watermark, ElementName=Root}"
@@ -24,10 +23,10 @@
                    IsHitTestVisible="False">
             <TextBlock.Style>
                 <Style TargetType="FrameworkElement">
-                    <Setter Property="Visibility" Value="Hidden"/>
+                    <Setter Property="Visibility" Value="Hidden" />
                     <Style.Triggers>
                         <DataTrigger Binding="{Binding Text, ElementName=TxtPathToRoot}" Value="">
-                            <Setter Property="Visibility" Value="Visible"/>
+                            <Setter Property="Visibility" Value="Visible" />
                         </DataTrigger>
                     </Style.Triggers>
                 </Style>

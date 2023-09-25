@@ -8,12 +8,12 @@ public enum PathKey
 
 public class PathChangedMessage
 {
-    public PathKey Key { get; }
-    public string Path { get; }
-
     public PathChangedMessage(PathKey key, string path)
     {
         Key = key;
         Path = path;
     }
+
+    public PathKey Key { get; }
+    public string Path { get; }
 }

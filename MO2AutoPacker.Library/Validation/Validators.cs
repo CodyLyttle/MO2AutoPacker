@@ -3,4 +3,4 @@
 public static class Validators
 {
     public delegate ValidatorResult Path(string path);
-} 
+}

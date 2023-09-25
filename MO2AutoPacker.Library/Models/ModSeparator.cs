@@ -1,23 +1,21 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace MO2AutoPacker.Library.Models;
+﻿namespace MO2AutoPacker.Library.Models;
 
 public class ModSeparator : IModListItem
 {
     private readonly Dictionary<string, Mod> _mods = new();
 
-    public string Name { get; set; }
-    public IEnumerable<Mod> Mods => _mods.Values;
-
     public ModSeparator(string name, params Mod[] mods)
     {
         Name = name;
         foreach (Mod mod in mods)
-        {
             AddMod(mod);
-        }
     }
+
+    public IEnumerable<Mod> Mods => _mods.Values;
+
+    public string Name { get; set; }
+
+    public string ToModListLine() => $"-{Name}_separator";
 
     public void AddMod(Mod mod)
     {
@@ -34,6 +32,4 @@ public class ModSeparator : IModListItem
     }
 
     public bool ContainsMod(Mod mod) => _mods.ContainsKey(mod.Name);
-
-    public string ToModListLine() => $"-{Name}_separator";
 }

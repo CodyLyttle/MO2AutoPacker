@@ -19,5 +19,5 @@ public static class DesignMocks
 
     public static readonly ProfileSelectorViewModel ProfileSelector = new(Messenger);
 
-    public static readonly ModListManagerViewModel ModListManager = new ModListManagerViewModel(Messenger);
+    public static readonly ModListManagerViewModel ModListManager = new(Messenger);
 }

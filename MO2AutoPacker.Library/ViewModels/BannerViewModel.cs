@@ -13,21 +13,21 @@ public partial class BannerViewModel : ViewModelBase, IRecipient<BannerMessage>
     private bool _isTransitioning;
 
     [ObservableProperty]
-    private bool _showMessage;
-
-    [ObservableProperty]
     private BannerMessage? _message;
 
-    public int QueuedMessageCount => _messageQueue.Count;
-
-    // Public setter in-case we allow user to tweak animation speed in the future.
-    public TimeSpan FadeDuration { get; set; } = TimeSpan.FromSeconds(0.2);
+    [ObservableProperty]
+    private bool _showMessage;
 
     public BannerViewModel(IMessenger messenger, IUIThreadDispatcher dispatcher)
     {
         messenger.Register(this);
         _dispatcher = dispatcher;
     }
+
+    public int QueuedMessageCount => _messageQueue.Count;
+
+    // Public setter in-case we allow user to tweak animation speed in the future.
+    public TimeSpan FadeDuration { get; set; } = TimeSpan.FromSeconds(0.2);
 
     public void Receive(BannerMessage message)
     {

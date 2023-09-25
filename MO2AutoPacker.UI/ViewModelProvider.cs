@@ -5,8 +5,5 @@ namespace MO2AutoPacker.UI;
 
 public static class ViewModelProvider
 {
-    public static T GetViewModel<T>() where T : ViewModelBase
-    {
-        return ServiceProvider.GetService<T>();
-    }
+    public static T GetViewModel<T>() where T : ViewModelBase => ServiceProvider.GetService<T>();
 }

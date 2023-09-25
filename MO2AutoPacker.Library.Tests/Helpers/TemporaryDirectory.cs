@@ -4,11 +4,9 @@ public sealed class TemporaryDirectory : IDisposable
 {
     private const string BaseName = "XUnitTempDir";
     private static readonly object Lock = new();
-    
+
     private static bool _isFirstRun = true;
     private static int _nextId;
-
-    public TemporaryFolder Root { get; }
 
     public TemporaryDirectory()
     {
@@ -25,10 +23,9 @@ public sealed class TemporaryDirectory : IDisposable
         Root = new TemporaryFolder(directory);
     }
 
-    public void Dispose()
-    {
-        Directory.Delete(Root.Directory.FullName, true);
-    }
+    public TemporaryFolder Root { get; }
+
+    public void Dispose() => Directory.Delete(Root.Directory.FullName, true);
 
     private static int GetNextId()
     {
@@ -40,7 +37,7 @@ public sealed class TemporaryDirectory : IDisposable
 
     private static void CleanupLeftoverDirectories()
     {
-        DirectoryInfo tempDir = new DirectoryInfo(Path.GetTempPath());
+        var tempDir = new DirectoryInfo(Path.GetTempPath());
         foreach (DirectoryInfo subDir in tempDir.EnumerateDirectories())
         {
             if (subDir.Name.StartsWith(BaseName))

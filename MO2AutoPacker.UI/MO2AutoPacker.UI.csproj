@@ -10,27 +10,27 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\MO2AutoPacker.Library\MO2AutoPacker.Library.csproj" />
+        <ProjectReference Include="..\MO2AutoPacker.Library\MO2AutoPacker.Library.csproj"/>
     </ItemGroup>
 
     <ItemGroup>
-      <Page Update="CustomControls\WatermarkedTextBox.xaml">
-        <Generator>MSBuild:Compile</Generator>
-      </Page>
-      <Page Update="Views\Banner.xaml">
-        <Generator>MSBuild:Compile</Generator>
-        <XamlRuntime>Wpf</XamlRuntime>
-        <SubType>Designer</SubType>
-      </Page>
-      <Page Update="Views\PathPicker.xaml">
-        <Generator>MSBuild:Compile</Generator>
-        <XamlRuntime>Wpf</XamlRuntime>
-        <SubType>Designer</SubType>
-      </Page>
-      <Page Update="Views\MainWindow.xaml">
-        <Generator>MSBuild:Compile</Generator>
-        <XamlRuntime>Wpf</XamlRuntime>
-        <SubType>Designer</SubType>
-      </Page>
+        <Page Update="CustomControls\WatermarkedTextBox.xaml">
+            <Generator>MSBuild:Compile</Generator>
+        </Page>
+        <Page Update="Views\Banner.xaml">
+            <Generator>MSBuild:Compile</Generator>
+            <XamlRuntime>Wpf</XamlRuntime>
+            <SubType>Designer</SubType>
+        </Page>
+        <Page Update="Views\PathPicker.xaml">
+            <Generator>MSBuild:Compile</Generator>
+            <XamlRuntime>Wpf</XamlRuntime>
+            <SubType>Designer</SubType>
+        </Page>
+        <Page Update="Views\MainWindow.xaml">
+            <Generator>MSBuild:Compile</Generator>
+            <XamlRuntime>Wpf</XamlRuntime>
+            <SubType>Designer</SubType>
+        </Page>
     </ItemGroup>
 </Project>

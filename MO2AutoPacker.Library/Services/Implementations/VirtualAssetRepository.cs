@@ -9,27 +9,69 @@ namespace MO2AutoPacker.Library.Services.Implementations;
 // Imitates MO2's virtual file system by overwriting conflicting assets.
 internal class VirtualAssetRepository : IVirtualAssetRepository
 {
-    private readonly object _fileLock = new();
-
     // TODO: Add packable folders for lod, audio, etc...
     internal static readonly string[] AssetFolderNames =
     {
         "meshes",
-        "textures",
+        "textures"
     };
 
     // eg. Relative path -> mod directory.
     // ["textures/textureA.dds"]= "C:/MO2/mods/SomeModName/"
     private readonly Dictionary<string, DirectoryInfo> _assetRepository = new();
-
-    public int FileCount { get; private set; }
+    private readonly object _fileLock = new();
 
     // Max Oblivion BSA size is 2GB.
     // Reserve a little space for the file header.
     public long ArchiveSizeInBytes { get; internal set; } = int.MaxValue - 1024;
 
+    public int FileCount { get; private set; }
+
+    public void AddMod(Mod mod)
+    {
+        lock (_fileLock)
+        {
+            foreach (DirectoryInfo subDir in GetAssetDirectories(mod.Directory))
+            foreach (string relativeAssetPath in GetAssetsRecursively(subDir, subDir.Name))
+            {
+                _assetRepository[relativeAssetPath] = mod.Directory;
+                FileCount++;
+            }
+        }
+    }
+
+    // TODO: Ensure exceptions are handled and converted to banner messages by the calling viewmodel.
+    public IEnumerable<VirtualArchive> CreateVirtualArchives()
+    {
+        lock (_fileLock)
+        {
+            VirtualArchive archive = new(ArchiveSizeInBytes);
+
+            using Dictionary<string, DirectoryInfo>.Enumerator pathPairs = _assetRepository.GetEnumerator();
+            while (pathPairs.MoveNext())
+            {
+                FileInfo fileInfo = GetFile(pathPairs.Current);
+                long size = fileInfo.Length;
+                if (size > ArchiveSizeInBytes)
+                    throw new InvalidOperationException(
+                        $"File exceeds the maximum BSA file size '{fileInfo.Name}'");
+
+                if (size > archive.VacantBytes)
+                {
+                    yield return archive;
+                    archive = new VirtualArchive(ArchiveSizeInBytes);
+                }
+
+                archive.AddFile(fileInfo);
+            }
+
+            if (archive.FileCount > 0)
+                yield return archive;
+        }
+    }
+
     /// <summary>
-    /// Used by test methods to verify internal state. 
+    ///     Used by test methods to verify internal state.
     /// </summary>
     /// <returns>A array of FileInfo objects representing the assets in the repository</returns>
     internal FileInfo[] GetAssetFiles()
@@ -39,21 +81,6 @@ internal class VirtualAssetRepository : IVirtualAssetRepository
             return _assetRepository
                 .Select(GetFile)
                 .ToArray();
-        }
-    }
-
-    public void AddMod(Mod mod)
-    {
-        lock (_fileLock)
-        {
-            foreach (DirectoryInfo subDir in GetAssetDirectories(mod.Directory))
-            {
-                foreach (string relativeAssetPath in GetAssetsRecursively(subDir, subDir.Name))
-                {
-                    _assetRepository[relativeAssetPath] = mod.Directory;
-                    FileCount++;
-                }
-            }
         }
     }
 
@@ -80,36 +107,6 @@ internal class VirtualAssetRepository : IVirtualAssetRepository
         {
             string relativeFilePath = Path.Combine(relativeDir, filePath.Name);
             yield return relativeFilePath;
-        }
-    }
-
-    // TODO: Ensure exceptions are handled and converted to banner messages by the calling viewmodel.
-    public IEnumerable<VirtualArchive> CreateVirtualArchives()
-    {
-        lock (_fileLock)
-        {
-            VirtualArchive archive = new(ArchiveSizeInBytes);
-
-            using var pathPairs = _assetRepository.GetEnumerator();
-            while (pathPairs.MoveNext())
-            {
-                FileInfo fileInfo = GetFile(pathPairs.Current);
-                long size = fileInfo.Length;
-                if (size > ArchiveSizeInBytes)
-                    throw new InvalidOperationException(
-                        $"File exceeds the maximum BSA file size '{fileInfo.Name}'");
-
-                if (size > archive.VacantBytes)
-                {
-                    yield return archive;
-                    archive = new VirtualArchive(ArchiveSizeInBytes);
-                }
-
-                archive.AddFile(fileInfo);
-            }
-
-            if (archive.FileCount > 0)
-                yield return archive;
         }
     }
 

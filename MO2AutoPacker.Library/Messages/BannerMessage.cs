@@ -8,13 +8,13 @@ public class BannerMessage
         Info,
         Success
     }
-    
-    public Type MessageType { get; }
-    public string Message { get; }
 
     public BannerMessage(Type messageType, string message)
     {
         MessageType = messageType;
         Message = message;
     }
+
+    public Type MessageType { get; }
+    public string Message { get; }
 }

@@ -15,9 +15,7 @@ public partial class PathPicker : UserControl
         DataContextChanged += (_, e) =>
         {
             if (e.NewValue is PathPickerViewModel vm)
-            {
                 _viewmodel = vm;
-            }
         };
     }
 

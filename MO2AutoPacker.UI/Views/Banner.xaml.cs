@@ -7,8 +7,8 @@ namespace MO2AutoPacker.UI.Views;
 
 public partial class Banner : UserControl
 {
-    private readonly BannerViewModel _viewmodel;
     private readonly DoubleAnimation _fadeAnimation = new();
+    private readonly BannerViewModel _viewmodel;
 
     public Banner()
     {
@@ -27,18 +27,13 @@ public partial class Banner : UserControl
         StartOpacityAnimation(GetTargetOpacity());
     }
 
-    private double GetTargetOpacity()
-    {
-        return _viewmodel.ShowMessage ? 1 : 0;
-    }
-    
-    private void StartOpacityAnimation(double opacity)
-    {
+    private double GetTargetOpacity() => _viewmodel.ShowMessage ? 1 : 0;
+
+    private void StartOpacityAnimation(double opacity) =>
         Dispatcher.Invoke(() =>
         {
             _fadeAnimation.To = opacity;
             _fadeAnimation.Duration = _viewmodel.FadeDuration;
             BeginAnimation(OpacityProperty, _fadeAnimation);
         });
-    }
 }

@@ -16,7 +16,7 @@
                 DockPanel.Dock="Right"
                 Content="🗀"
                 FontWeight="Bold"
-                Click="BtnOpenDialog_OnClick"/>
+                Click="BtnOpenDialog_OnClick" />
         <local:WatermarkedTextBox
             x:Name="TxtPath"
             DockPanel.Dock="Left"

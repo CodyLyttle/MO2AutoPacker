@@ -14,9 +14,6 @@ public partial class PathPickerViewModel : ViewModelBase
     [ObservableProperty]
     private string? _path;
 
-    public PathKey Key { get; }
-    public string Watermark { get; }
-
     public PathPickerViewModel(IMessenger messenger, PathKey key, string watermark)
     {
         _messenger = messenger;
@@ -24,6 +21,9 @@ public partial class PathPickerViewModel : ViewModelBase
         Watermark = watermark;
         _pathValidators = new List<Validators.Path> {PrimaryPathValidator};
     }
+
+    public PathKey Key { get; }
+    public string Watermark { get; }
 
     public void AddValidator(Validators.Path validator) => _pathValidators.Add(validator);
 
@@ -34,7 +34,7 @@ public partial class PathPickerViewModel : ViewModelBase
             return;
 
         ValidatorResult result = ValidatePath(path);
-        if(result.WasSuccessful)
+        if (result.WasSuccessful)
         {
             Path = path;
             _messenger.Send(new PathChangedMessage(Key, Path));
@@ -54,14 +54,12 @@ public partial class PathPickerViewModel : ViewModelBase
             if (!result.WasSuccessful)
                 return result;
         }
-        
+
         return ValidatorResult.Success();
     }
 
-    private static ValidatorResult PrimaryPathValidator(string path)
-    {
-        return Directory.Exists(path)
+    private static ValidatorResult PrimaryPathValidator(string path) =>
+        Directory.Exists(path)
             ? ValidatorResult.Success()
             : ValidatorResult.Fail($"Directory '{path}' doesn't exist");
-    }
 }

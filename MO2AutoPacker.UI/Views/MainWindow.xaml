@@ -17,8 +17,6 @@
             <Color x:Key="SecondaryColor">#DADADA</Color>
             <Color x:Key="TernaryColor">#BABABA</Color>
             <Color x:Key="BorderColor">#8A8A8A</Color>
-            <SolidColorBrush x:Key="PrimaryBrush" Color="{StaticResource PrimaryColor}" />
-            <SolidColorBrush x:Key="SecondaryBrush" Color="{StaticResource SecondaryColor}" />
             <SolidColorBrush x:Key="BorderBrush" Color="{StaticResource BorderColor}" />
 
             <Style TargetType="Label" x:Key="HeaderLabel">
@@ -28,7 +26,7 @@
             </Style>
 
             <Style TargetType="Border" x:Key="HeaderBorder">
-                <Setter Property="Height" Value="48"></Setter>
+                <Setter Property="Height" Value="48" />
                 <Setter Property="BorderBrush" Value="{StaticResource BorderBrush}" />
                 <Setter Property="BorderThickness" Value="0 1 0 1" />
                 <Setter Property="VerticalAlignment" Value="Top" />
@@ -118,7 +116,7 @@
                             </ComboBox.ItemTemplate>
                         </ComboBox>
                     </StackPanel>
-                    
+
                     <local:ModListManager DockPanel.Dock="Bottom"
                                           HorizontalAlignment="Stretch"
                                           VerticalAlignment="Stretch" />
@@ -129,9 +127,7 @@
             <!-- Right content -->
             <Border Grid.Column="2"
                     Grid.Row="1"
-                    Style="{StaticResource ContentBorder}">
-
-            </Border>
+                    Style="{StaticResource ContentBorder}" />
         </Grid>
         <local:Banner Height="48"
                       VerticalAlignment="Top" />

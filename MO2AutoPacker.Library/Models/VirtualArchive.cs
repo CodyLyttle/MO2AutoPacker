@@ -4,11 +4,6 @@ public class VirtualArchive
 {
     private readonly HashSet<string> _filePaths = new();
 
-    public int FileCount { get; private set; }
-    public long MaxCapacityBytes { get; }
-    public long OccupiedBytes { get; private set; }
-    public long VacantBytes { get; private set; }
-
     public VirtualArchive(long maxCapacityBytes)
     {
         if (maxCapacityBytes <= 0)
@@ -18,6 +13,11 @@ public class VirtualArchive
         MaxCapacityBytes = maxCapacityBytes;
         VacantBytes = MaxCapacityBytes;
     }
+
+    public int FileCount { get; private set; }
+    public long MaxCapacityBytes { get; }
+    public long OccupiedBytes { get; private set; }
+    public long VacantBytes { get; private set; }
 
     public void AddFile(FileInfo fileInfo)
     {

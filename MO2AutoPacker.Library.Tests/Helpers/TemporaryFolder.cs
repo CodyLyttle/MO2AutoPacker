@@ -2,25 +2,35 @@
 
 public class TemporaryFolder
 {
-    public string Path => Directory.FullName;
-    public DirectoryInfo Directory { get; }
-
     public TemporaryFolder(DirectoryInfo directory)
     {
         Directory = directory;
     }
-    
-    public TemporaryFolder AddFolder(string name)
-        => new(Directory.CreateSubdirectory(name));
-    
-    public TemporaryFolder AddFile() 
-        => AddFile(GetRandomName());
 
-    public TemporaryFolder AddFile(string name)
-        => AddFile(name, GetRandomFileSize());
+    public string Path => Directory.FullName;
+    
+    public DirectoryInfo Directory { get; }
 
-    public TemporaryFolder AddFile(int size)
-        => AddFile(GetRandomName(), size);
+    private static string RandomName => Guid.NewGuid().ToString();
+
+    private static int RandomFileSize => Random.Shared.Next(0, 256);
+
+    private static byte[] RandomBuffer(int length)
+    {
+        var buffer = new byte[length];
+        for (var i = 0; i < length; i++)
+            buffer[i] = (byte) Random.Shared.Next(256);
+
+        return buffer;
+    }
+
+    public TemporaryFolder AddFolder(string name) => new(Directory.CreateSubdirectory(name));
+
+    public TemporaryFolder AddFile() => AddFile(RandomName);
+
+    public TemporaryFolder AddFile(string name) => AddFile(name, RandomFileSize);
+
+    public TemporaryFolder AddFile(int size) => AddFile(RandomName, size);
 
     public TemporaryFolder AddFile(string name, int size)
     {
@@ -28,14 +38,11 @@ public class TemporaryFolder
         return this;
     }
 
-    public TemporaryFolder AddFile(out string filePath)
-        => AddFile(GetRandomName(), out filePath);
+    public TemporaryFolder AddFile(out string filePath) => AddFile(RandomName, out filePath);
 
-    public TemporaryFolder AddFile(string name, out string filePath)
-        => AddFile(name, GetRandomFileSize(), out filePath);
+    public TemporaryFolder AddFile(string name, out string filePath) => AddFile(name, RandomFileSize, out filePath);
 
-    public TemporaryFolder AddFile(int size, out string filePath)
-        => AddFile(GetRandomName(), size, out filePath);
+    public TemporaryFolder AddFile(int size, out string filePath) => AddFile(RandomName, size, out filePath);
 
     public TemporaryFolder AddFile(string name, int size, out string filePath)
     {
@@ -47,24 +54,9 @@ public class TemporaryFolder
     {
         string filePath = System.IO.Path.Combine(Directory.FullName, name);
         FileStream stream = File.Create(filePath, size);
-        stream.Write(GetRandomBuffer(size));
+        stream.Write(RandomBuffer(size));
         stream.Close();
 
         return filePath;
-    }
-
-    private static string GetRandomName() => Guid.NewGuid().ToString();
-
-    private static int GetRandomFileSize() => Random.Shared.Next(0, 256);
-
-    private static byte[] GetRandomBuffer(int length)
-    {
-        var buffer = new byte[length];
-        for (var i = 0; i < length; i++)
-        {
-            buffer[i] = (byte) Random.Shared.Next(256);
-        }
-
-        return buffer;
     }
 }

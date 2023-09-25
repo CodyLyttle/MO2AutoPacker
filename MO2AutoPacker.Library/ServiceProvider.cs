@@ -7,7 +7,7 @@ using MO2AutoPacker.Library.ViewModels;
 namespace MO2AutoPacker.Library;
 
 /// <summary>
-/// Basic dependency bootstrapper.
+///     Basic dependency bootstrapper.
 /// </summary>
 // Subject to change if further features are required, such as swapping dependencies at run-time.
 public class ServiceProvider

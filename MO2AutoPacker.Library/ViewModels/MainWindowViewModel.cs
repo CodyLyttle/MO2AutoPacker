@@ -5,19 +5,14 @@ namespace MO2AutoPacker.Library.ViewModels;
 
 // The primary class responsible for managing application state.
 // Any dependencies should be configured in App.xaml.cs and injected here.
-public partial class MainWindowViewModel : ViewModelBase, IRecipient<PackRequestMessage>
+public class MainWindowViewModel : ViewModelBase
 {
-    public PathPickerViewModel RootPathPicker { get; }
-    public ProfileSelectorViewModel ProfileSelector { get; }
-
     public MainWindowViewModel(IMessenger messenger)
     {
         RootPathPicker = new PathPickerViewModel(messenger, PathKey.ModOrganizerRoot, "Mod Organizer 2 path");
         ProfileSelector = new ProfileSelectorViewModel(messenger);
     }
 
-    public void Receive(PackRequestMessage message)
-    {
-        
-    }
+    public PathPickerViewModel RootPathPicker { get; }
+    public ProfileSelectorViewModel ProfileSelector { get; }
 }

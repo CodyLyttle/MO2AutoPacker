@@ -14,6 +14,12 @@ public partial class ProfileSelectorViewModel : ViewModelBase, IRecipient<PathCh
 
     private Profile? _selectedProfile;
 
+    public ProfileSelectorViewModel(IMessenger messenger)
+    {
+        _messenger = messenger;
+        _messenger.Register(this);
+    }
+
     public Profile? SelectedProfile
     {
         get => _selectedProfile;
@@ -29,12 +35,6 @@ public partial class ProfileSelectorViewModel : ViewModelBase, IRecipient<PathCh
 
     public IEnumerable<string> ProfileNames => Profiles.Select(p => p.Name);
 
-    public ProfileSelectorViewModel(IMessenger messenger)
-    {
-        _messenger = messenger;
-        _messenger.Register(this);
-    }
-
     public void Receive(PathChangedMessage message)
     {
         if (message.Key != PathKey.ModOrganizerRoot)
@@ -45,19 +45,15 @@ public partial class ProfileSelectorViewModel : ViewModelBase, IRecipient<PathCh
         SelectedProfile = null;
 
         string profilesPath = Path.Combine(message.Path, "profiles");
-        DirectoryInfo profilesDir = new DirectoryInfo(profilesPath);
+        var profilesDir = new DirectoryInfo(profilesPath);
         if (!profilesDir.Exists)
-        {
             _messenger.Send(new BannerMessage(BannerMessage.Type.Error,
                 "Invalid MO2 directory - missing subdirectory 'profiles'"));
-        }
         else
-        {
             Profiles = profilesDir.EnumerateDirectories()
                 .Select(dir => new Profile(dir))
                 .ToArray();
-        }
-        
+
         // Update the UI regardless of profile read outcome.
         OnPropertyChanged(nameof(Profiles));
     }

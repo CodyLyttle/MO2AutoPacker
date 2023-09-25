@@ -1,5 +1,4 @@
-﻿using System.Diagnostics;
-using CommunityToolkit.Mvvm.ComponentModel;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using CommunityToolkit.Mvvm.Messaging;
 using MO2AutoPacker.Library.Messages;
@@ -73,10 +72,8 @@ public partial class ModListManagerViewModel : ViewModelBase, IRecipient<Profile
             return null;
 
         if (line.EndsWith("_separator"))
-        {
             // Trim prefix '-' and suffix '_separator'
             return new ModSeparator(line[1..^10]);
-        }
 
         char firstChar = line[0];
         if (firstChar is not '-' && firstChar is not '+')
@@ -84,7 +81,7 @@ public partial class ModListManagerViewModel : ViewModelBase, IRecipient<Profile
 
         string modName = line[1..];
         string modPath = Path.Combine(modsPath.FullName, modName);
-        DirectoryInfo modDirectory = new DirectoryInfo(modPath);
+        DirectoryInfo modDirectory = new(modPath);
         return modDirectory.Exists
             ? new Mod(modName, modDirectory, line[0] == '+')
             : null; // TODO: Should we display a warning to the user?

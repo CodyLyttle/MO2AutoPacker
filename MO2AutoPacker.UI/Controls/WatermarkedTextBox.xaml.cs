@@ -22,10 +22,7 @@ public partial class WatermarkedTextBox : UserControl
         "Text", typeof(string), typeof(WatermarkedTextBox),
         new PropertyMetadata(GetDefaultTextValue()));
 
-    private static string GetDefaultTextValue()
-    {
-        return string.Empty;
-    }
+    private static string GetDefaultTextValue() => string.Empty;
 
     #endregion
 
@@ -41,10 +38,7 @@ public partial class WatermarkedTextBox : UserControl
         "Watermark", typeof(string), typeof(WatermarkedTextBox),
         new PropertyMetadata(GetDefaultWatermarkValue()));
 
-    private static string GetDefaultWatermarkValue()
-    {
-        return "Watermark";
-    }
+    private static string GetDefaultWatermarkValue() => "Watermark";
 
     #endregion
 
@@ -60,10 +54,7 @@ public partial class WatermarkedTextBox : UserControl
         "WatermarkOpacity", typeof(double), typeof(WatermarkedTextBox),
         new PropertyMetadata(GetDefaultWatermarkOpacityValue()));
 
-    private static double GetDefaultWatermarkOpacityValue()
-    {
-        return 0.66;
-    }
+    private static double GetDefaultWatermarkOpacityValue() => 0.66;
 
     #endregion
 }

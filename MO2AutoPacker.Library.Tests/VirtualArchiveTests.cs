@@ -7,19 +7,14 @@ public sealed class VirtualArchiveTests : IDisposable
 {
     private readonly TemporaryDirectory _tempDir = new();
 
-    public void Dispose()
-    {
-        _tempDir.Dispose();
-    }
+    public void Dispose() => _tempDir.Dispose();
 
     [Theory]
     [InlineData(int.MinValue)]
     [InlineData(-1)]
     [InlineData(0)]
-    public void Constructor_ShouldThrowArgumentOutOfRangeException_WhenCapacityLessThanOne(int capacity)
-    {
+    public void Constructor_ShouldThrowArgumentOutOfRangeException_WhenCapacityLessThanOne(int capacity) =>
         Assert.Throws<ArgumentOutOfRangeException>(() => new VirtualArchive(capacity));
-    }
 
     [Fact]
     public void AddFile_ShouldThrowInvalidOperationException_WhenFileSizeExceedsMaximumArchiveSize()
@@ -84,7 +79,7 @@ public sealed class VirtualArchiveTests : IDisposable
         var fileCount = 0;
         long occupied = 0;
         long vacant = int.MaxValue;
-        
+
         for (var i = 0; i < 10; i++)
         {
             _tempDir.Root.AddFile(out string filePath);
@@ -93,7 +88,7 @@ public sealed class VirtualArchiveTests : IDisposable
             fileCount++;
             occupied += file.Length;
             vacant -= file.Length;
-            
+
             Assert.Equal(fileCount, testTarget.FileCount);
             Assert.Equal(occupied, testTarget.OccupiedBytes);
             Assert.Equal(vacant, testTarget.VacantBytes);
