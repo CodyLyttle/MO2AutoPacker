@@ -10,4 +10,5 @@ public class Profile
 
     public string Name { get; }
     public DirectoryInfo Directory { get; }
+    
 }

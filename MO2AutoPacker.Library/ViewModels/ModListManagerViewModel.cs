@@ -9,7 +9,6 @@ namespace MO2AutoPacker.Library.ViewModels;
 
 public partial class ModListManagerViewModel : ViewModelBase, IRecipient<ProfileChangedMessage>
 {
-    private const string ModsFolderName = "mods";
     private const string ModListFileName = "modlist.txt";
     private readonly IDirectoryReader _directoryReader;
 
@@ -33,6 +32,7 @@ public partial class ModListManagerViewModel : ViewModelBase, IRecipient<Profile
         if (message.Profile is null)
             return;
 
+        // TODO: Extract an interface for reading/writing modlist.txt, or add to Profile model.
         string modListFilePath = Path.Combine(message.Profile.Directory.FullName, ModListFileName);
         FileInfo modListFile = new(modListFilePath);
         if (!modListFile.Exists)
@@ -82,7 +82,10 @@ public partial class ModListManagerViewModel : ViewModelBase, IRecipient<Profile
     private void PackFiles()
     {
         if (ModList is null)
-            throw new InvalidOperationException("Cannot pack an empty mod list");
+        {
+            _messenger.Send(new BannerMessage(BannerMessage.Type.Error, "Cannot pack an empty mod list"));
+            return;
+        }
 
         _messenger.Send(new PackRequestMessage(ModList));
     }

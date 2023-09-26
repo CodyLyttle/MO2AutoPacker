@@ -2,5 +2,5 @@
 
 public interface IDirectoryManager : IDirectoryReader
 {
-    void SetModOrganizer(string path);
+    void SetModOrganizerFolder(string path);
 }

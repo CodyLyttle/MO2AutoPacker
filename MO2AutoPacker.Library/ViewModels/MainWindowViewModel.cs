@@ -10,24 +10,36 @@ public partial class MainWindowViewModel : ViewModelBase
 {
     private readonly IMessenger _messenger;
     private readonly IPathPicker _pathPicker;
+    private readonly IDirectoryManager _directoryManager;
 
     [ObservableProperty]
     private string _modOrganizerPath = string.Empty;
 
-    public MainWindowViewModel(IMessenger messenger, IPathPicker pathPicker)
+    public MainWindowViewModel(IMessenger messenger, IPathPicker pathPicker, IDirectoryManager directoryManager)
     {
         _messenger = messenger;
         _pathPicker = pathPicker;
+        _directoryManager = directoryManager;
     }
 
     [RelayCommand]
     private void PickModOrganizerPath()
     {
         DirectoryInfo? newDir = _pathPicker.PickDirectory();
-        ModOrganizerPath = newDir is null
-            ? string.Empty
-            : newDir.FullName;
+        if (newDir == null) // Closed/cancelled path picker.
+            return;
 
-        _messenger.Send(new PathChangedMessage(PathKey.ModOrganizerRoot, ModOrganizerPath));
+        try
+        {
+            _directoryManager.SetModOrganizerFolder(newDir.FullName);
+        }
+        catch (DirectoryNotFoundException ex)
+        {
+            ModOrganizerPath = string.Empty;
+            _messenger.Send(new BannerMessage(BannerMessage.Type.Error, ex.Message));
+            return;
+        }
+
+        _messenger.Send(new ModOrganizerPathChanged());
     }
 }

@@ -2,23 +2,27 @@
 using CommunityToolkit.Mvvm.Messaging;
 using MO2AutoPacker.Library.Messages;
 using MO2AutoPacker.Library.Models;
+using MO2AutoPacker.Library.Services;
 
 namespace MO2AutoPacker.Library.ViewModels;
 
-public partial class ProfileSelectorViewModel : ViewModelBase, IRecipient<PathChangedMessage>
+public partial class ProfileSelectorViewModel : ViewModelBase, IRecipient<ModOrganizerPathChanged>
 {
     private readonly IMessenger _messenger;
+    private readonly IDirectoryReader _reader;
+
+
+    public ProfileSelectorViewModel(IMessenger messenger, IDirectoryReader reader)
+    {
+        _messenger = messenger;
+        _messenger.Register(this);
+        _reader = reader;
+    }
 
     [ObservableProperty]
     private Profile[] _profiles = Array.Empty<Profile>();
 
     private Profile? _selectedProfile;
-
-    public ProfileSelectorViewModel(IMessenger messenger)
-    {
-        _messenger = messenger;
-        _messenger.Register(this);
-    }
 
     public Profile? SelectedProfile
     {
@@ -35,26 +39,11 @@ public partial class ProfileSelectorViewModel : ViewModelBase, IRecipient<PathCh
 
     public IEnumerable<string> ProfileNames => Profiles.Select(p => p.Name);
 
-    public void Receive(PathChangedMessage message)
+    public void Receive(ModOrganizerPathChanged message)
     {
-        if (message.Key != PathKey.ModOrganizerRoot)
-            return;
-
-        // Clear profiles early to ensure the UI is wiped in the event of an error.
-        Profiles = Array.Empty<Profile>();
         SelectedProfile = null;
-
-        string profilesPath = Path.Combine(message.Path, "profiles");
-        var profilesDir = new DirectoryInfo(profilesPath);
-        if (!profilesDir.Exists)
-            _messenger.Send(new BannerMessage(BannerMessage.Type.Error,
-                "Invalid MO2 directory - missing subdirectory 'profiles'"));
-        else
-            Profiles = profilesDir.EnumerateDirectories()
-                .Select(dir => new Profile(dir))
-                .ToArray();
-
-        // Update the UI regardless of profile read outcome.
-        OnPropertyChanged(nameof(Profiles));
+        Profiles = _reader.GetProfileFolders()
+            .Select(dir => new Profile(dir))
+            .ToArray();
     }
 }

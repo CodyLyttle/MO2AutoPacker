@@ -16,7 +16,7 @@ internal sealed class TemporaryDirectoryManager : IDirectoryManager, IDisposable
         _profiles = _tempDir.Root.AddFolder(DirectoryManager.ProfileFolderName);
     }
 
-    public DirectoryInfo GetModOrganizer() => _tempDir.Root.Directory;
+    public DirectoryInfo GetModOrganizerFolder() => _tempDir.Root.Directory;
 
     public DirectoryInfo GetModsFolder() => _mods.Directory;
 
@@ -35,7 +35,7 @@ internal sealed class TemporaryDirectoryManager : IDirectoryManager, IDisposable
 
     public IEnumerable<DirectoryInfo> GetProfileFolders() => _profiles.Directory.EnumerateDirectories();
 
-    public void SetModOrganizer(string path) => throw new InvalidOperationException("May only be set internally");
+    public void SetModOrganizerFolder(string path) => throw new InvalidOperationException("May only be set internally");
 
     public void Dispose() => _tempDir.Dispose();
 

@@ -17,7 +17,7 @@ public class DirectoryManagerTests
         _modsFolder = _tempDir.Root.AddFolder("mods");
         _profilesFolder = _tempDir.Root.AddFolder("profiles");
         _testTarget = new DirectoryManager();
-        _testTarget.SetModOrganizer(_tempDir.Root.Directory.FullName);
+        _testTarget.SetModOrganizerFolder(_tempDir.Root.Directory.FullName);
     }
 
     private static void AssertEqualPath(TemporaryFolder expected, DirectoryInfo actual) =>
@@ -25,7 +25,7 @@ public class DirectoryManagerTests
 
     [Fact]
     public void GetModOrganizer_ShouldReturnRootFolder() =>
-        AssertEqualPath(_tempDir.Root, _testTarget.GetModOrganizer());
+        AssertEqualPath(_tempDir.Root, _testTarget.GetModOrganizerFolder());
 
     [Fact]
     public void GetMods_ShouldReturnModsFolder() => AssertEqualPath(_modsFolder, _testTarget.GetModsFolder());
@@ -95,7 +95,7 @@ public class DirectoryManagerTests
     public void SetModOrganizer_ShouldThrowDirectoryNotFoundException_WhenPathDoesNotExist()
     {
         // Arrange
-        Action act = () => _testTarget.SetModOrganizer(@"I:\My\Fake\Path");
+        Action act = () => _testTarget.SetModOrganizerFolder(@"I:\My\Fake\Path");
 
         // Act
         act.Should().Throw<DirectoryNotFoundException>()
@@ -107,7 +107,7 @@ public class DirectoryManagerTests
     {
         // Arrange
         _modsFolder.Directory.Delete();
-        Action act = () => _testTarget.SetModOrganizer(_tempDir.Root.Directory.FullName);
+        Action act = () => _testTarget.SetModOrganizerFolder(_tempDir.Root.Directory.FullName);
 
         // Assert
         act.Should().Throw<DirectoryNotFoundException>()
@@ -119,7 +119,7 @@ public class DirectoryManagerTests
     {
         // Arrange
         _profilesFolder.Directory.Delete();
-        Action act = () => _testTarget.SetModOrganizer(_tempDir.Root.Directory.FullName);
+        Action act = () => _testTarget.SetModOrganizerFolder(_tempDir.Root.Directory.FullName);
 
         // Assert
         act.Should().Throw<DirectoryNotFoundException>()
@@ -133,7 +133,7 @@ public class DirectoryManagerTests
         DirectoryManager uninitialized = new();
         Action[] actions =
         {
-            () => _ = uninitialized.GetModOrganizer(),
+            () => _ = uninitialized.GetModOrganizerFolder(),
             () => _ = uninitialized.GetModsFolder(),
             () => _ = uninitialized.GetModFolders(),
             () => _ = uninitialized.GetModFolder(""),
@@ -156,7 +156,7 @@ public class DirectoryManagerTests
         _tempDir.Root.Directory.Delete(true);
         (DirectoryInfo, Action)[] actions =
         {
-            (_tempDir.Root.Directory, () => _ = _testTarget.GetModOrganizer()),
+            (_tempDir.Root.Directory, () => _ = _testTarget.GetModOrganizerFolder()),
             (_modsFolder.Directory, () => _ = _testTarget.GetModsFolder()),
             (_modsFolder.Directory, () => _ = _testTarget.GetModFolders()),
             (_modsFolder.Directory, () => _ = _testTarget.GetModFolder("")),

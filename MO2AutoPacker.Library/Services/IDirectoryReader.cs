@@ -2,7 +2,7 @@
 
 public interface IDirectoryReader
 {
-    DirectoryInfo GetModOrganizer();
+    DirectoryInfo GetModOrganizerFolder();
     DirectoryInfo GetModsFolder();
     DirectoryInfo GetModFolder(string modName);
     IEnumerable<DirectoryInfo> GetModFolders();

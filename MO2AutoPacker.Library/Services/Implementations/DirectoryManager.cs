@@ -14,7 +14,7 @@ internal class DirectoryManager : IDirectoryManager
     private DirectoryInfo? _profiles;
 
 
-    public void SetModOrganizer(string path)
+    public void SetModOrganizerFolder(string path)
     {
         if (!Path.Exists(path))
             throw new DirectoryNotFoundException("Invalid path to MO2 root directory");
@@ -32,7 +32,7 @@ internal class DirectoryManager : IDirectoryManager
         _profiles = new DirectoryInfo(profilesPath);
     }
 
-    public DirectoryInfo GetModOrganizer() => GetDirectory(_modOrganizer);
+    public DirectoryInfo GetModOrganizerFolder() => GetDirectory(_modOrganizer);
 
     public DirectoryInfo GetModsFolder() => GetDirectory(_mods);
 

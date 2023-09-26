@@ -16,11 +16,11 @@ public static class DesignMocks
     private static readonly IUIThreadDispatcher Dispatcher = new WpfDispatcher();
     private static readonly IPathPicker PathPicker = new WindowsPathPicker();
 
-    public static readonly MainWindowViewModel MainWindow = new(Messenger, PathPicker);
+    public static readonly MainWindowViewModel MainWindow = new(Messenger, PathPicker, DirectoryManager);
 
     public static readonly BannerViewModel Banner = new(Messenger, Dispatcher);
 
-    public static readonly ProfileSelectorViewModel ProfileSelector = new(Messenger);
+    public static readonly ProfileSelectorViewModel ProfileSelector = new(Messenger, DirectoryManager);
 
     public static readonly ModListManagerViewModel ModListManager = new(Messenger, DirectoryManager);
 
@@ -30,12 +30,12 @@ public static class DesignMocks
 
     private class DesignDirectoryManager : IDirectoryManager
     {
-        public DirectoryInfo GetModOrganizer() => throw new NotImplementedException();
+        public DirectoryInfo GetModOrganizerFolder() => throw new NotImplementedException();
         public DirectoryInfo GetModsFolder() => throw new NotImplementedException();
         public DirectoryInfo GetModFolder(string modName) => throw new NotImplementedException();
         public IEnumerable<DirectoryInfo> GetModFolders() => throw new NotImplementedException();
         public DirectoryInfo GetProfilesFolder() => throw new NotImplementedException();
         public IEnumerable<DirectoryInfo> GetProfileFolders() => throw new NotImplementedException();
-        public void SetModOrganizer(string path) => throw new NotImplementedException();
+        public void SetModOrganizerFolder(string path) => throw new NotImplementedException();
     }
 }
