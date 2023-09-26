@@ -29,9 +29,14 @@ public class ServiceProvider
             throw new InvalidOperationException("Services have already been initialized");
 
         IServiceCollection collection = new ServiceCollection()
+            // Services
             .AddSingleton(dispatcher)
-            .AddSingleton<IMessenger>(new WeakReferenceMessenger())
-            .AddSingleton<IVirtualAssetRepository>(new VirtualAssetRepository())
+            .AddSingleton<DirectoryManager>()
+            .AddSingleton<IDirectoryManager>(x => x.GetRequiredService<DirectoryManager>())
+            .AddSingleton<IDirectoryReader>(x => x.GetRequiredService<DirectoryManager>())
+            .AddSingleton<IVirtualAssetRepository, VirtualAssetRepository>()
+            .AddSingleton<IMessenger, WeakReferenceMessenger>()
+            // View models.
             .AddSingleton<MainWindowViewModel>()
             .AddSingleton<BannerViewModel>()
             .AddSingleton<ModListManagerViewModel>();
