@@ -1,6 +1,7 @@
 ﻿using System.ComponentModel;
 using System.Windows.Controls;
 using System.Windows.Media.Animation;
+using Microsoft.Extensions.DependencyInjection;
 using MO2AutoPacker.Library.ViewModels;
 
 namespace MO2AutoPacker.UI.Views;
@@ -13,7 +14,7 @@ public partial class Banner : UserControl
     public Banner()
     {
         InitializeComponent();
-        _viewmodel = ViewModelProvider.GetViewModel<BannerViewModel>();
+        _viewmodel = App.Current.Services.GetService<BannerViewModel>()!;
         _viewmodel.PropertyChanged += OnPropertyChanged;
         DataContext = _viewmodel;
         Opacity = GetTargetOpacity();

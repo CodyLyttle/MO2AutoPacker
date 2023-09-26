@@ -19,7 +19,7 @@ public partial class WatermarkedTextBox : UserControl
     }
 
     public static readonly DependencyProperty TextProperty = DependencyProperty.Register(
-        "Text", typeof(string), typeof(WatermarkedTextBox),
+        nameof(Text), typeof(string), typeof(WatermarkedTextBox),
         new PropertyMetadata(GetDefaultTextValue()));
 
     private static string GetDefaultTextValue() => string.Empty;
@@ -35,7 +35,7 @@ public partial class WatermarkedTextBox : UserControl
     }
 
     public static readonly DependencyProperty WatermarkProperty = DependencyProperty.Register(
-        "Watermark", typeof(string), typeof(WatermarkedTextBox),
+        nameof(Watermark), typeof(string), typeof(WatermarkedTextBox),
         new PropertyMetadata(GetDefaultWatermarkValue()));
 
     private static string GetDefaultWatermarkValue() => "Watermark";
@@ -51,7 +51,7 @@ public partial class WatermarkedTextBox : UserControl
     }
 
     public static readonly DependencyProperty WatermarkOpacityProperty = DependencyProperty.Register(
-        "WatermarkOpacity", typeof(double), typeof(WatermarkedTextBox),
+        nameof(WatermarkOpacity), typeof(double), typeof(WatermarkedTextBox),
         new PropertyMetadata(GetDefaultWatermarkOpacityValue()));
 
     private static double GetDefaultWatermarkOpacityValue() => 0.66;

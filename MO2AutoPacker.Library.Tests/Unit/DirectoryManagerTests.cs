@@ -6,10 +6,10 @@ namespace MO2AutoPacker.Library.Tests.Unit;
 
 public class DirectoryManagerTests
 {
-    private readonly DirectoryManager _testTarget;
-    private readonly TemporaryDirectory _tempDir;
     private readonly TemporaryFolder _modsFolder;
     private readonly TemporaryFolder _profilesFolder;
+    private readonly TemporaryDirectory _tempDir;
+    private readonly DirectoryManager _testTarget;
 
     public DirectoryManagerTests()
     {
@@ -74,7 +74,7 @@ public class DirectoryManagerTests
         // Arrange
         const string modName = "Real mod";
         _modsFolder.AddFolder(modName);
-        
+
         // Act
         _testTarget.GetModFolder(modName);
     }

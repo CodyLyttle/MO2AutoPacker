@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.IO;
 using CommunityToolkit.Mvvm.Messaging;
-using MO2AutoPacker.Library.Messages;
 using MO2AutoPacker.Library.Models;
 using MO2AutoPacker.Library.Services;
 using MO2AutoPacker.Library.ViewModels;
@@ -15,12 +14,11 @@ public static class DesignMocks
     private static readonly IMessenger Messenger = new WeakReferenceMessenger();
     private static readonly IDirectoryManager DirectoryManager = new DesignDirectoryManager();
     private static readonly IUIThreadDispatcher Dispatcher = new WpfDispatcher();
+    private static readonly IPathPicker PathPicker = new WindowsPathPicker();
 
-    public static readonly MainWindowViewModel MainWindow = new(Messenger);
+    public static readonly MainWindowViewModel MainWindow = new(Messenger, PathPicker);
 
     public static readonly BannerViewModel Banner = new(Messenger, Dispatcher);
-
-    public static readonly PathPickerViewModel PathPicker = new(Messenger, PathKey.ModOrganizerRoot, "Watermark");
 
     public static readonly ProfileSelectorViewModel ProfileSelector = new(Messenger);
 

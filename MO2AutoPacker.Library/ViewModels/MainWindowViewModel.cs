@@ -1,18 +1,33 @@
-﻿using CommunityToolkit.Mvvm.Messaging;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
+using CommunityToolkit.Mvvm.Messaging;
 using MO2AutoPacker.Library.Messages;
+using MO2AutoPacker.Library.Services;
 
 namespace MO2AutoPacker.Library.ViewModels;
 
-// The primary class responsible for managing application state.
-// Any dependencies should be configured in App.xaml.cs and injected here.
-public class MainWindowViewModel : ViewModelBase
+public partial class MainWindowViewModel : ViewModelBase
 {
-    public MainWindowViewModel(IMessenger messenger)
+    private readonly IMessenger _messenger;
+    private readonly IPathPicker _pathPicker;
+
+    [ObservableProperty]
+    private string _modOrganizerPath = string.Empty;
+
+    public MainWindowViewModel(IMessenger messenger, IPathPicker pathPicker)
     {
-        RootPathPicker = new PathPickerViewModel(messenger, PathKey.ModOrganizerRoot, "Mod Organizer 2 path");
-        ProfileSelector = new ProfileSelectorViewModel(messenger);
+        _messenger = messenger;
+        _pathPicker = pathPicker;
     }
 
-    public PathPickerViewModel RootPathPicker { get; }
-    public ProfileSelectorViewModel ProfileSelector { get; }
+    [RelayCommand]
+    private void PickModOrganizerPath()
+    {
+        DirectoryInfo? newDir = _pathPicker.PickDirectory();
+        ModOrganizerPath = newDir is null
+            ? string.Empty
+            : newDir.FullName;
+
+        _messenger.Send(new PathChangedMessage(PathKey.ModOrganizerRoot, ModOrganizerPath));
+    }
 }

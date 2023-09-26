@@ -1,14 +1,13 @@
-﻿<UserControl x:Class="MO2AutoPacker.UI.Views.PathPicker"
+﻿<UserControl x:Class="MO2AutoPacker.UI.Controls.PathPicker"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:attached="clr-namespace:MO2AutoPacker.UI.AttachedProperties"
              xmlns:local="clr-namespace:MO2AutoPacker.UI.Controls"
-             xmlns:root="clr-namespace:MO2AutoPacker.UI"
              mc:Ignorable="d"
              d:DesignHeight="32" d:DesignWidth="300"
-             d:DataContext="{x:Static root:DesignMocks.PathPicker}">
+             x:Name="Root">
 
     <DockPanel LastChildFill="True">
         <Button x:Name="BtnOpenDialog"
@@ -16,12 +15,12 @@
                 DockPanel.Dock="Right"
                 Content="🗀"
                 FontWeight="Bold"
-                Click="BtnOpenDialog_OnClick" />
+                Command="{Binding Command, ElementName=Root}" />
         <local:WatermarkedTextBox
             x:Name="TxtPath"
             DockPanel.Dock="Left"
             IsEnabled="False"
-            Text="{Binding Path, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-            Watermark="{Binding Watermark}" />
+            Text="{Binding Text, ElementName=Root}"
+            Watermark="{Binding Watermark, ElementName=Root}" />
     </DockPanel>
 </UserControl>
