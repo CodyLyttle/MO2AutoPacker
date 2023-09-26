@@ -19,7 +19,13 @@ internal class VirtualAssetRepository : IVirtualAssetRepository
     // eg. Relative path -> mod directory.
     // ["textures/textureA.dds"]= "C:/MO2/mods/SomeModName/"
     private readonly Dictionary<string, DirectoryInfo> _assetRepository = new();
-    private readonly object _fileLock = new();
+    private readonly object _assetsLock = new();
+    private readonly IDirectoryReader _directoryReader;
+
+    public VirtualAssetRepository(IDirectoryReader directoryReader)
+    {
+        _directoryReader = directoryReader;
+    }
 
     // Max Oblivion BSA size is 2GB.
     // Reserve a little space for the file header.
@@ -29,13 +35,19 @@ internal class VirtualAssetRepository : IVirtualAssetRepository
 
     public void AddMod(Mod mod)
     {
-        lock (_fileLock)
+        lock (_assetsLock)
         {
-            foreach (DirectoryInfo subDir in GetAssetDirectories(mod.Directory))
-            foreach (string relativeAssetPath in GetAssetsRecursively(subDir, subDir.Name))
+            DirectoryInfo modDir = _directoryReader.GetModFolder(mod.Name);
+            IEnumerable<DirectoryInfo> assetDirectories = modDir.GetDirectories()
+                .Where(dir => AssetFolderNames.Contains(dir.Name));
+
+            foreach (DirectoryInfo assetDir in assetDirectories)
             {
-                _assetRepository[relativeAssetPath] = mod.Directory;
-                FileCount++;
+                foreach (string relativeAssetPath in GetAssetsRecursively(assetDir, assetDir.Name))
+                {
+                    _assetRepository[relativeAssetPath] = modDir;
+                    FileCount++;
+                }
             }
         }
     }
@@ -43,7 +55,7 @@ internal class VirtualAssetRepository : IVirtualAssetRepository
     // TODO: Ensure exceptions are handled and converted to banner messages by the calling viewmodel.
     public IEnumerable<VirtualArchive> CreateVirtualArchives()
     {
-        lock (_fileLock)
+        lock (_assetsLock)
         {
             VirtualArchive archive = new(ArchiveSizeInBytes);
 
@@ -76,20 +88,11 @@ internal class VirtualAssetRepository : IVirtualAssetRepository
     /// <returns>A array of FileInfo objects representing the assets in the repository</returns>
     internal FileInfo[] GetAssetFiles()
     {
-        lock (_fileLock)
+        lock (_assetsLock)
         {
             return _assetRepository
                 .Select(GetFile)
                 .ToArray();
-        }
-    }
-
-    private static IEnumerable<DirectoryInfo> GetAssetDirectories(DirectoryInfo modDir)
-    {
-        foreach (DirectoryInfo subDir in modDir.GetDirectories())
-        {
-            if (AssetFolderNames.Contains(subDir.Name, StringComparer.OrdinalIgnoreCase))
-                yield return subDir;
         }
     }
 

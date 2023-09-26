@@ -2,7 +2,7 @@
 using FluentAssertions;
 using MO2AutoPacker.Library.Models;
 
-namespace MO2AutoPacker.Library.Tests;
+namespace MO2AutoPacker.Library.Tests.Unit;
 
 public class PackedMetaDataTests
 {

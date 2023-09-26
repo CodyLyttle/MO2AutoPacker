@@ -8,7 +8,6 @@ internal class DirectoryManager : IDirectoryManager
 {
     public const string ModsFolderName = "mods";
     public const string ProfileFolderName = "profiles";
-    public const string ModListFileName = "modlist.txt";
 
     private DirectoryInfo? _modOrganizer;
     private DirectoryInfo? _mods;

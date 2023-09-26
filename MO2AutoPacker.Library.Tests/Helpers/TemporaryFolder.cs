@@ -8,7 +8,7 @@ public class TemporaryFolder
     }
 
     public string Path => Directory.FullName;
-    
+
     public DirectoryInfo Directory { get; }
 
     private static string RandomName => Guid.NewGuid().ToString();
@@ -38,25 +38,26 @@ public class TemporaryFolder
         return this;
     }
 
-    public TemporaryFolder AddFile(out string filePath) => AddFile(RandomName, out filePath);
+    public TemporaryFolder AddFile(out FileInfo filePath) => AddFile(RandomName, out filePath);
 
-    public TemporaryFolder AddFile(string name, out string filePath) => AddFile(name, RandomFileSize, out filePath);
+    public TemporaryFolder AddFile(string name, out FileInfo filePath) => AddFile(name, RandomFileSize, out filePath);
 
-    public TemporaryFolder AddFile(int size, out string filePath) => AddFile(RandomName, size, out filePath);
+    public TemporaryFolder AddFile(int size, out FileInfo filePath) => AddFile(RandomName, size, out filePath);
 
-    public TemporaryFolder AddFile(string name, int size, out string filePath)
+    public TemporaryFolder AddFile(string name, int size, out FileInfo filePath)
     {
         filePath = AddFileToFolder(name, size);
         return this;
     }
 
-    private string AddFileToFolder(string name, int size)
+
+    private FileInfo AddFileToFolder(string name, int size)
     {
         string filePath = System.IO.Path.Combine(Directory.FullName, name);
         FileStream stream = File.Create(filePath, size);
         stream.Write(RandomBuffer(size));
         stream.Close();
 
-        return filePath;
+        return new FileInfo(filePath);
     }
 }

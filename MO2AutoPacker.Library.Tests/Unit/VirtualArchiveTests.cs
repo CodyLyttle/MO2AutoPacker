@@ -1,7 +1,7 @@
 ﻿using MO2AutoPacker.Library.Models;
 using MO2AutoPacker.Library.Tests.Helpers;
 
-namespace MO2AutoPacker.Library.Tests;
+namespace MO2AutoPacker.Library.Tests.Unit;
 
 public sealed class VirtualArchiveTests : IDisposable
 {
@@ -21,8 +21,7 @@ public sealed class VirtualArchiveTests : IDisposable
     {
         // Arrange
         VirtualArchive testTarget = new(127);
-        _tempDir.Root.AddFile(128, out string filePath);
-        FileInfo file = new(filePath);
+        _tempDir.Root.AddFile(128, out FileInfo file);
 
         // Assert
         Assert.Throws<InvalidOperationException>(() => testTarget.AddFile(file));
@@ -49,8 +48,7 @@ public sealed class VirtualArchiveTests : IDisposable
     {
         // Arrange
         VirtualArchive testTarget = new(int.MaxValue);
-        _tempDir.Root.AddFile(out string filePath);
-        FileInfo file = new(filePath);
+        _tempDir.Root.AddFile(out FileInfo file);
         testTarget.AddFile(file);
 
         // Assert
@@ -62,14 +60,13 @@ public sealed class VirtualArchiveTests : IDisposable
     {
         // Arrange
         VirtualArchive testTarget = new(int.MaxValue);
-        _tempDir.Root.AddFile(out string filePath);
-        FileInfo file = new(filePath);
+        _tempDir.Root.AddFile(out FileInfo file);
 
         // Act
         testTarget.AddFile(file);
 
         // Assert
-        Assert.Equal(filePath, testTarget.EnumerateFilePaths().First());
+        Assert.Equal(file.FullName, testTarget.EnumerateFilePaths().First());
     }
 
     [Fact]
@@ -82,8 +79,7 @@ public sealed class VirtualArchiveTests : IDisposable
 
         for (var i = 0; i < 10; i++)
         {
-            _tempDir.Root.AddFile(out string filePath);
-            FileInfo file = new(filePath);
+            _tempDir.Root.AddFile(out FileInfo file);
             testTarget.AddFile(file);
             fileCount++;
             occupied += file.Length;

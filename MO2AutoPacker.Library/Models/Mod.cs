@@ -2,14 +2,12 @@
 
 public class Mod : IModListItem
 {
-    public Mod(string name, DirectoryInfo directory, bool isEnabled)
+    public Mod(string name, bool isEnabled)
     {
         Name = name;
-        Directory = directory;
         IsEnabled = isEnabled;
     }
 
-    public DirectoryInfo Directory { get; set; }
     public bool IsEnabled { get; set; }
     public string Name { get; set; }
 

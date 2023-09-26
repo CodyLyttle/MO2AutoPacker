@@ -3,6 +3,7 @@ using CommunityToolkit.Mvvm.Input;
 using CommunityToolkit.Mvvm.Messaging;
 using MO2AutoPacker.Library.Messages;
 using MO2AutoPacker.Library.Models;
+using MO2AutoPacker.Library.Services;
 
 namespace MO2AutoPacker.Library.ViewModels;
 
@@ -10,16 +11,18 @@ public partial class ModListManagerViewModel : ViewModelBase, IRecipient<Profile
 {
     private const string ModsFolderName = "mods";
     private const string ModListFileName = "modlist.txt";
+    private readonly IDirectoryReader _directoryReader;
 
     private readonly IMessenger _messenger;
 
     [ObservableProperty]
     private ModList? _modList;
 
-    public ModListManagerViewModel(IMessenger messenger)
+    public ModListManagerViewModel(IMessenger messenger, IDirectoryReader directoryReader)
     {
         _messenger = messenger;
         _messenger.Register(this);
+        _directoryReader = directoryReader;
     }
 
     public void Receive(ProfileChangedMessage message)
@@ -29,16 +32,6 @@ public partial class ModListManagerViewModel : ViewModelBase, IRecipient<Profile
 
         if (message.Profile is null)
             return;
-
-        string mo2RootPath = message.Profile.Directory.Parent!.Parent!.FullName;
-        string modsPath = Path.Combine(mo2RootPath, ModsFolderName);
-        DirectoryInfo modsDir = new(modsPath);
-        if (!modsDir.Exists)
-        {
-            _messenger.Send(new BannerMessage(BannerMessage.Type.Error,
-                "Invalid MO2 directory - missing subdirectory 'mods'"));
-            return;
-        }
 
         string modListFilePath = Path.Combine(message.Profile.Directory.FullName, ModListFileName);
         FileInfo modListFile = new(modListFilePath);
@@ -54,7 +47,7 @@ public partial class ModListManagerViewModel : ViewModelBase, IRecipient<Profile
         string? line = reader.ReadLine();
         while (line != null)
         {
-            IModListItem? item = ParseModFromManifestLine(modsDir, line);
+            IModListItem? item = ParseModFromManifestLine(line);
             if (item != null)
                 items.Add(item);
 
@@ -66,25 +59,23 @@ public partial class ModListManagerViewModel : ViewModelBase, IRecipient<Profile
         ModList = new ModList(message.Profile.Name, items.ToArray());
     }
 
-    private IModListItem? ParseModFromManifestLine(DirectoryInfo modsPath, string line)
+    // TODO: Extract ModListReader service.
+    private IModListItem? ParseModFromManifestLine(string line)
     {
         if (line.Length == 0)
             return null;
 
-        if (line.EndsWith("_separator"))
-            // Trim prefix '-' and suffix '_separator'
-            return new ModSeparator(line[1..^10]);
+        char prefix = line[0];
+        string name = line[1..];
 
-        char firstChar = line[0];
-        if (firstChar is not '-' && firstChar is not '+')
+        // Line represents something other than a mod or separator, such as official DLC or a comment.
+        if (prefix is not '-' && prefix is not '+')
             return null;
 
-        string modName = line[1..];
-        string modPath = Path.Combine(modsPath.FullName, modName);
-        DirectoryInfo modDirectory = new(modPath);
-        return modDirectory.Exists
-            ? new Mod(modName, modDirectory, line[0] == '+')
-            : null; // TODO: Should we display a warning to the user?
+        if (line.EndsWith("_separator"))
+            return new ModSeparator(name[..^10]); // Trim suffix.
+
+        return new Mod(name, prefix is '+');
     }
 
     [RelayCommand]
