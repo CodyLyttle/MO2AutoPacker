@@ -6,6 +6,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MO2AutoPacker.Library", "MO
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MO2AutoPacker.Library.Tests", "MO2AutoPacker.Library.Tests\MO2AutoPacker.Library.Tests.csproj", "{15FC0CFA-0314-446C-ABDB-98B8590AB823}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MO2AutoPacker.UI.Tests", "MO2AutoPacker.UI.Tests\MO2AutoPacker.UI.Tests.csproj", "{6A687C84-2F2F-49A8-80D2-5E27BA307847}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -24,5 +26,9 @@ Global
 		{15FC0CFA-0314-446C-ABDB-98B8590AB823}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{15FC0CFA-0314-446C-ABDB-98B8590AB823}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{15FC0CFA-0314-446C-ABDB-98B8590AB823}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6A687C84-2F2F-49A8-80D2-5E27BA307847}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6A687C84-2F2F-49A8-80D2-5E27BA307847}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6A687C84-2F2F-49A8-80D2-5E27BA307847}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6A687C84-2F2F-49A8-80D2-5E27BA307847}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

@@ -41,5 +41,6 @@ public partial class MainWindowViewModel : ViewModelBase
         }
 
         _messenger.Send(new ModOrganizerPathChanged());
+        throw new Exception("Shit's fucked yo");
     }
 }
