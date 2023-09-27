@@ -32,6 +32,7 @@ public partial class MainWindowViewModel : ViewModelBase
         try
         {
             _directoryManager.SetModOrganizerFolder(newDir.FullName);
+            ModOrganizerPath = newDir.FullName;
         }
         catch (DirectoryNotFoundException ex)
         {
@@ -41,6 +42,5 @@ public partial class MainWindowViewModel : ViewModelBase
         }
 
         _messenger.Send(new ModOrganizerPathChanged());
-        throw new Exception("Shit's fucked yo");
     }
 }
