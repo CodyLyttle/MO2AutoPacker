@@ -5,9 +5,9 @@ namespace MO2AutoPacker.Library.Tests.Helpers;
 
 internal sealed class TemporaryDirectoryManager : IDirectoryManager, IDisposable
 {
-    public readonly TemporaryFolder _mods;
-    public readonly TemporaryFolder _profiles;
-    public readonly TemporaryDirectory _tempDir;
+    private readonly TemporaryFolder _mods;
+    private readonly TemporaryFolder _profiles;
+    private readonly TemporaryDirectory _tempDir;
 
     public TemporaryDirectoryManager()
     {

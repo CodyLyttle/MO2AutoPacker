@@ -11,10 +11,14 @@ public sealed class TemporaryDirectory : IDisposable
     public TemporaryDirectory()
     {
         // Cleanup existing TemporaryDirectory that was not properly disposed.
-        if (_isFirstRun)
+
+        lock (Lock)
         {
-            CleanupLeftoverDirectories();
-            _isFirstRun = false;
+            if (_isFirstRun)
+            {
+                _isFirstRun = false;
+                CleanupLeftoverDirectories();
+            }
         }
 
         string folderName = BaseName + GetNextId();
