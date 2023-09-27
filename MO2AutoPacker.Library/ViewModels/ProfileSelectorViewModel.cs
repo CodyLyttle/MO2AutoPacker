@@ -6,10 +6,15 @@ using MO2AutoPacker.Library.Services;
 
 namespace MO2AutoPacker.Library.ViewModels;
 
-public partial class ProfileSelectorViewModel : ViewModelBase, IRecipient<ModOrganizerPathChanged>
+public partial class ProfileSelectorViewModel : ViewModelBase, IRecipient<ModOrganizerPathChangedMessage>
 {
     private readonly IMessenger _messenger;
     private readonly IDirectoryReader _reader;
+
+    [ObservableProperty]
+    private Profile[] _profiles = Array.Empty<Profile>();
+
+    private Profile? _selectedProfile;
 
 
     public ProfileSelectorViewModel(IMessenger messenger, IDirectoryReader reader)
@@ -18,11 +23,6 @@ public partial class ProfileSelectorViewModel : ViewModelBase, IRecipient<ModOrg
         _messenger.Register(this);
         _reader = reader;
     }
-
-    [ObservableProperty]
-    private Profile[] _profiles = Array.Empty<Profile>();
-
-    private Profile? _selectedProfile;
 
     public Profile? SelectedProfile
     {
@@ -39,7 +39,7 @@ public partial class ProfileSelectorViewModel : ViewModelBase, IRecipient<ModOrg
 
     public IEnumerable<string> ProfileNames => Profiles.Select(p => p.Name);
 
-    public void Receive(ModOrganizerPathChanged message)
+    public void Receive(ModOrganizerPathChangedMessage message)
     {
         SelectedProfile = null;
         Profiles = _reader.GetProfileFolders()

@@ -3,7 +3,6 @@ using CommunityToolkit.Mvvm.Messaging;
 using MO2AutoPacker.Library.Messages;
 using MO2AutoPacker.Library.Models;
 using MO2AutoPacker.Library.Tests.Helpers;
-using MO2AutoPacker.Library.Tests.Stubs;
 using MO2AutoPacker.Library.ViewModels;
 
 namespace MO2AutoPacker.Library.Tests.Unit.ViewModels;
@@ -46,14 +45,15 @@ public sealed class ModListManagerViewModelTests : IDisposable
     public void Receive_ShouldSendBannerError_WhenMissingModListFile()
     {
         // Arrange
-        RecipientStub<BannerMessage> errorReceiver = new(_messenger);
+        MessageCollector messageCollector = new MessageCollector(_messenger)
+            .AddWhitelist<BannerMessage>();
         ProfileChangedMessage outgoingMsg = new(CreateProfile());
 
         // Act
         _testTarget.Receive(outgoingMsg);
-        BannerMessage incomingMsg = errorReceiver.Messages.Dequeue();
 
         // Assert
+        var incomingMsg = messageCollector.DequeueMessage<BannerMessage>();
         Assert.Equal(BannerMessage.Type.Error, incomingMsg.MessageType);
         Assert.Contains($"missing file '{ModListFileName}'", incomingMsg.Message);
     }

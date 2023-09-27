@@ -8,9 +8,9 @@ namespace MO2AutoPacker.Library.ViewModels;
 
 public partial class MainWindowViewModel : ViewModelBase
 {
+    private readonly IDirectoryManager _directoryManager;
     private readonly IMessenger _messenger;
     private readonly IPathPicker _pathPicker;
-    private readonly IDirectoryManager _directoryManager;
 
     [ObservableProperty]
     private string _modOrganizerPath = string.Empty;
@@ -26,7 +26,9 @@ public partial class MainWindowViewModel : ViewModelBase
     private void PickModOrganizerPath()
     {
         DirectoryInfo? newDir = _pathPicker.PickDirectory();
-        if (newDir == null) // Closed/cancelled path picker.
+
+        // Picker cancelled/closed or identical path picked.
+        if (newDir == null || newDir.FullName == ModOrganizerPath)
             return;
 
         try
@@ -36,11 +38,10 @@ public partial class MainWindowViewModel : ViewModelBase
         }
         catch (DirectoryNotFoundException ex)
         {
-            ModOrganizerPath = string.Empty;
             _messenger.Send(new BannerMessage(BannerMessage.Type.Error, ex.Message));
             return;
         }
 
-        _messenger.Send(new ModOrganizerPathChanged());
+        _messenger.Send(new ModOrganizerPathChangedMessage());
     }
 }
