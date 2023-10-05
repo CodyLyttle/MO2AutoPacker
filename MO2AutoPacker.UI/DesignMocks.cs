@@ -22,7 +22,7 @@ public static class DesignMocks
 
     public static readonly ProfileSelectorViewModel ProfileSelector = new(Messenger, DirectoryManager);
 
-    public static readonly ModListManagerViewModel ModListManager = new(Messenger, DirectoryManager);
+    public static readonly ModListManagerViewModel ModListManager = new(Messenger);
 
     public static readonly Mod Mod = new("My Mod", true);
 

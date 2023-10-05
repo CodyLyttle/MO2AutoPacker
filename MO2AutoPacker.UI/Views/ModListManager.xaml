@@ -20,10 +20,6 @@
     </UserControl.Resources>
 
     <DockPanel LastChildFill="True">
-        <Button DockPanel.Dock="Bottom"
-                Content="Pack"
-                Command="{Binding PackFilesCommand}"
-                Width="120" />
 
         <ListView ItemsSource="{Binding ModList.Items, FallbackValue=''}"
                   Background="Transparent"

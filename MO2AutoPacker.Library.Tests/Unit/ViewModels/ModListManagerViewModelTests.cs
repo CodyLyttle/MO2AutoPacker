@@ -19,7 +19,7 @@ public sealed class ModListManagerViewModelTests : IDisposable
     {
         _messenger = new WeakReferenceMessenger();
         _tempDirManager = new TemporaryDirectoryManager();
-        _testTarget = new ModListManagerViewModel(_messenger, _tempDirManager);
+        _testTarget = new ModListManagerViewModel(_messenger);
     }
 
     public void Dispose() => _tempDirManager.Dispose();

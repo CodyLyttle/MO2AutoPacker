@@ -1,26 +1,54 @@
-﻿using CommunityToolkit.Mvvm.ComponentModel;
+﻿using System.Diagnostics;
+using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using CommunityToolkit.Mvvm.Messaging;
 using MO2AutoPacker.Library.Messages;
+using MO2AutoPacker.Library.Models;
 using MO2AutoPacker.Library.Services;
 
 namespace MO2AutoPacker.Library.ViewModels;
 
-public partial class MainWindowViewModel : ViewModelBase
+public partial class MainWindowViewModel : ViewModelBase, IRecipient<ProfileChangedMessage>
 {
     private readonly IDirectoryManager _directoryManager;
     private readonly IMessenger _messenger;
     private readonly IPathPicker _pathPicker;
 
     [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(CanPackArchive))]
+    private string _archiverPath = string.Empty;
+
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(CanPackArchive))]
     private string _modOrganizerPath = string.Empty;
+
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(CanPackArchive))]
+    private Profile? _selectedProfile;
 
     public MainWindowViewModel(IMessenger messenger, IPathPicker pathPicker, IDirectoryManager directoryManager)
     {
         _messenger = messenger;
+        _messenger.Register(this);
         _pathPicker = pathPicker;
         _directoryManager = directoryManager;
+
+        // TODO: Remove temporary workaround.
+        // PackArchiveCommand.CanExecute isn't updating when ParkArchiveCommand changes.
+        PropertyChanged += (_, args) =>
+        {
+            string name = args.PropertyName!;
+            if (name is nameof(ModOrganizerPath) or nameof(ArchiverPath) or nameof(SelectedProfile))
+                PackArchiveCommand.NotifyCanExecuteChanged();
+        };
     }
+
+    public bool CanPackArchive =>
+        Path.Exists(ModOrganizerPath)
+        && Path.Exists(ArchiverPath)
+        && SelectedProfile is not null;
+
+    public void Receive(ProfileChangedMessage message) => SelectedProfile = message.Profile;
 
     [RelayCommand]
     private void PickModOrganizerPath()
@@ -44,4 +72,26 @@ public partial class MainWindowViewModel : ViewModelBase
 
         _messenger.Send(new ModOrganizerPathChangedMessage());
     }
+
+    [RelayCommand]
+    private void PickArchiverPath()
+    {
+        DirectoryInfo? newDir = _pathPicker.PickDirectory();
+
+        if (newDir == null || newDir.FullName == ArchiverPath)
+            return;
+
+        try
+        {
+            _directoryManager.SetArchiverFolder(newDir.FullName);
+            ArchiverPath = newDir.FullName;
+        }
+        catch (Exception ex) when (ex is DirectoryNotFoundException or FileNotFoundException)
+        {
+            _messenger.Send(new BannerMessage(BannerMessage.Type.Error, ex.Message));
+        }
+    }
+
+    [RelayCommand(CanExecute = nameof(CanPackArchive))]
+    private void PackArchive() => Debug.WriteLine("PACK ARCHIVE");
 }

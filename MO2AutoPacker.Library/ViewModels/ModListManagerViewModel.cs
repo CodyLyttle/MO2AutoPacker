@@ -1,27 +1,23 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
-using CommunityToolkit.Mvvm.Input;
 using CommunityToolkit.Mvvm.Messaging;
 using MO2AutoPacker.Library.Messages;
 using MO2AutoPacker.Library.Models;
-using MO2AutoPacker.Library.Services;
 
 namespace MO2AutoPacker.Library.ViewModels;
 
 public partial class ModListManagerViewModel : ViewModelBase, IRecipient<ProfileChangedMessage>
 {
     private const string ModListFileName = "modlist.txt";
-    private readonly IDirectoryReader _directoryReader;
 
     private readonly IMessenger _messenger;
 
     [ObservableProperty]
     private ModList? _modList;
 
-    public ModListManagerViewModel(IMessenger messenger, IDirectoryReader directoryReader)
+    public ModListManagerViewModel(IMessenger messenger)
     {
         _messenger = messenger;
         _messenger.Register(this);
-        _directoryReader = directoryReader;
     }
 
     public void Receive(ProfileChangedMessage message)
@@ -76,17 +72,5 @@ public partial class ModListManagerViewModel : ViewModelBase, IRecipient<Profile
             return new ModSeparator(name[..^10]); // Trim suffix.
 
         return new Mod(name, prefix is '+');
-    }
-
-    [RelayCommand]
-    private void PackFiles()
-    {
-        if (ModList is null)
-        {
-            _messenger.Send(new BannerMessage(BannerMessage.Type.Error, "Cannot pack an empty mod list"));
-            return;
-        }
-
-        _messenger.Send(new PackRequestMessage(ModList));
     }
 }
