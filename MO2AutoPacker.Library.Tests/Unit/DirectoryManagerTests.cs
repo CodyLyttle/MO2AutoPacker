@@ -6,6 +6,12 @@ namespace MO2AutoPacker.Library.Tests.Unit;
 
 public class DirectoryManagerTests
 {
+    private const string ArchiverFolderName = "Archiver";
+    private const string ModOrganizerFolderName = "ModOrganizer";
+
+    private readonly TemporaryFolder _archiverFolder;
+    private readonly FileInfo _archiverExecutable;
+    private readonly TemporaryFolder _modOrganizerFolder;
     private readonly TemporaryFolder _modsFolder;
     private readonly TemporaryFolder _profilesFolder;
     private readonly TemporaryDirectory _tempDir;
@@ -14,18 +20,34 @@ public class DirectoryManagerTests
     public DirectoryManagerTests()
     {
         _tempDir = new TemporaryDirectory();
-        _modsFolder = _tempDir.Root.AddFolder("mods");
-        _profilesFolder = _tempDir.Root.AddFolder("profiles");
+        
+        _archiverFolder = _tempDir.Root.AddFolder(ArchiverFolderName);
+        _archiverFolder.AddFile(DirectoryManager.ArchiverExecutableName);
+        _archiverExecutable = _archiverFolder.Directory.GetFiles()[0];
+        
+        _modOrganizerFolder = _tempDir.Root.AddFolder(ModOrganizerFolderName);
+        _modsFolder = _modOrganizerFolder.AddFolder(DirectoryManager.ModsFolderName);
+        _profilesFolder = _modOrganizerFolder.AddFolder(DirectoryManager.ProfileFolderName);
+        
         _testTarget = new DirectoryManager();
-        _testTarget.SetModOrganizerFolder(_tempDir.Root.Directory.FullName);
+        _testTarget.SetArchiverFolder(_archiverFolder.Directory.FullName);
+        _testTarget.SetModOrganizerFolder(_modOrganizerFolder.Directory.FullName);
     }
 
     private static void AssertEqualPath(TemporaryFolder expected, DirectoryInfo actual) =>
         Assert.Equal(expected.Directory.FullName, actual.FullName);
 
     [Fact]
+    public void GetArchiverFolder_ShouldReturnArchiverFolder() =>
+        AssertEqualPath(_archiverFolder, _testTarget.GetArchiverFolder());
+
+    [Fact]
+    public void GetArchiverExecutable_ShouldReturnArchiverExecutableFile() =>
+        Assert.Equal(_archiverFolder.Directory.GetFiles()[0].FullName, _testTarget.GetArchiverExecutable().FullName);
+
+    [Fact]
     public void GetModOrganizer_ShouldReturnRootFolder() =>
-        AssertEqualPath(_tempDir.Root, _testTarget.GetModOrganizerFolder());
+        AssertEqualPath(_modOrganizerFolder, _testTarget.GetModOrganizerFolder());
 
     [Fact]
     public void GetMods_ShouldReturnModsFolder() => AssertEqualPath(_modsFolder, _testTarget.GetModsFolder());
@@ -119,7 +141,7 @@ public class DirectoryManagerTests
     {
         // Arrange
         _profilesFolder.Directory.Delete();
-        Action act = () => _testTarget.SetModOrganizerFolder(_tempDir.Root.Directory.FullName);
+        Action act = () => _testTarget.SetModOrganizerFolder(_modOrganizerFolder.Directory.FullName);
 
         // Assert
         act.Should().Throw<DirectoryNotFoundException>()
@@ -133,6 +155,7 @@ public class DirectoryManagerTests
         DirectoryManager uninitialized = new();
         Action[] actions =
         {
+            () => _ = uninitialized.GetArchiverFolder(),
             () => _ = uninitialized.GetModOrganizerFolder(),
             () => _ = uninitialized.GetModsFolder(),
             () => _ = uninitialized.GetModFolders(),
@@ -150,13 +173,28 @@ public class DirectoryManagerTests
     }
 
     [Fact]
+    public void GetArchiverExecutable_ShouldThrowFileNotFoundException_WhenFileRemovedAfterInitialized()
+    {
+        // Arrange
+        _archiverExecutable.Delete();
+        
+        // Act
+        Action act = () => _testTarget.GetArchiverExecutable();
+        
+        // Assert
+        act.Should().Throw<FileNotFoundException>()
+            .WithMessage(_archiverExecutable.FullName);
+    }
+
+    [Fact]
     public void VariousGetters_ShouldThrowDirectoryNotFoundException_WhenDirectoryRemovedAfterInitialized()
     {
         // Arrange
         _tempDir.Root.Directory.Delete(true);
         (DirectoryInfo, Action)[] actions =
         {
-            (_tempDir.Root.Directory, () => _ = _testTarget.GetModOrganizerFolder()),
+            (_archiverFolder.Directory, () => _ = _testTarget.GetArchiverFolder()),
+            (_modOrganizerFolder.Directory, () => _ = _testTarget.GetModOrganizerFolder()),
             (_modsFolder.Directory, () => _ = _testTarget.GetModsFolder()),
             (_modsFolder.Directory, () => _ = _testTarget.GetModFolders()),
             (_modsFolder.Directory, () => _ = _testTarget.GetModFolder("")),

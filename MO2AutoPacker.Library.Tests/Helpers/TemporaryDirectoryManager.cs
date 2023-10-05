@@ -5,6 +5,7 @@ namespace MO2AutoPacker.Library.Tests.Helpers;
 
 internal sealed class TemporaryDirectoryManager : IDirectoryManager, IDisposable
 {
+    private readonly TemporaryFolder _archiver;
     private readonly TemporaryFolder _mods;
     private readonly TemporaryFolder _profiles;
     private readonly TemporaryDirectory _tempDir;
@@ -12,9 +13,15 @@ internal sealed class TemporaryDirectoryManager : IDirectoryManager, IDisposable
     public TemporaryDirectoryManager()
     {
         _tempDir = new TemporaryDirectory();
+        _archiver = _tempDir.Root.AddFolder("Archiver")
+            .AddFile(DirectoryManager.ArchiverExecutableName);
         _mods = _tempDir.Root.AddFolder(DirectoryManager.ModsFolderName);
         _profiles = _tempDir.Root.AddFolder(DirectoryManager.ProfileFolderName);
     }
+
+    public DirectoryInfo GetArchiverFolder() => _archiver.Directory;
+
+    public FileInfo GetArchiverExecutable() => _archiver.Directory.GetFiles()[0];
 
     public DirectoryInfo GetModOrganizerFolder() => _tempDir.Root.Directory;
 
@@ -36,6 +43,7 @@ internal sealed class TemporaryDirectoryManager : IDirectoryManager, IDisposable
     public IEnumerable<DirectoryInfo> GetProfileFolders() => _profiles.Directory.EnumerateDirectories();
 
     public void SetModOrganizerFolder(string path) => throw new InvalidOperationException("May only be set internally");
+    public void SetArchiverFolder(string path) => throw new NotImplementedException();
 
     public void Dispose() => _tempDir.Dispose();
 

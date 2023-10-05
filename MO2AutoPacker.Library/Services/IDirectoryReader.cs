@@ -2,6 +2,8 @@
 
 public interface IDirectoryReader
 {
+    DirectoryInfo GetArchiverFolder();
+    FileInfo GetArchiverExecutable();
     DirectoryInfo GetModOrganizerFolder();
     DirectoryInfo GetModsFolder();
     DirectoryInfo GetModFolder(string modName);

@@ -6,9 +6,13 @@ namespace MO2AutoPacker.Library.Services.Implementations;
 
 internal class DirectoryManager : IDirectoryManager
 {
+    public const string ArchiverExecutableName = "BSArch.exe";
     public const string ModsFolderName = "mods";
     public const string ProfileFolderName = "profiles";
 
+    private DirectoryInfo? _archiver;
+    private FileInfo? _archiverExecutable;
+    
     private DirectoryInfo? _modOrganizer;
     private DirectoryInfo? _mods;
     private DirectoryInfo? _profiles;
@@ -21,16 +25,33 @@ internal class DirectoryManager : IDirectoryManager
 
         string modsPath = Path.Combine(path, ModsFolderName);
         if (!Path.Exists(modsPath))
-            throw new DirectoryNotFoundException("Missing folder in MO2 directory 'mods'");
+            throw new DirectoryNotFoundException($"Missing folder in MO2 directory '{ModsFolderName}'");
 
         string profilesPath = Path.Combine(path, ProfileFolderName);
         if (!Path.Exists(profilesPath))
-            throw new DirectoryNotFoundException("Missing folder in MO2 directory 'profiles'");
+            throw new DirectoryNotFoundException($"Missing folder in MO2 directory '{ProfileFolderName}'");
 
         _modOrganizer = new DirectoryInfo(path);
         _mods = new DirectoryInfo(modsPath);
         _profiles = new DirectoryInfo(profilesPath);
     }
+
+    public void SetArchiverFolder(string path)
+    {
+        if (!Path.Exists(path))
+            throw new DirectoryNotFoundException("Invalid path to BSArch directory");
+
+        string executablePath = Path.Combine(path, ArchiverExecutableName);
+        if (!File.Exists(executablePath))
+            throw new FileNotFoundException($"Missing executable file '{ArchiverExecutableName}'");
+
+        _archiver = new DirectoryInfo(path);
+        _archiverExecutable = new FileInfo(executablePath);
+    }
+
+    public DirectoryInfo GetArchiverFolder() => GetDirectory(_archiver);
+
+    public FileInfo GetArchiverExecutable() => GetFile(_archiverExecutable);
 
     public DirectoryInfo GetModOrganizerFolder() => GetDirectory(_modOrganizer);
 
@@ -60,5 +81,15 @@ internal class DirectoryManager : IDirectoryManager
             throw new DirectoryNotFoundException(directory.FullName);
 
         return directory;
+    }
+
+    private static FileInfo GetFile(FileInfo? file)
+    {
+        if (file is null)
+            throw new InvalidOperationException("Requested file is uninitialized");
+        if (!file.Exists)
+            throw new FileNotFoundException(file.FullName);
+
+        return file;
     }
 }

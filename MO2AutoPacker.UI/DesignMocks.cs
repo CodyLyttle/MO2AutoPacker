@@ -30,6 +30,8 @@ public static class DesignMocks
 
     private class DesignDirectoryManager : IDirectoryManager
     {
+        public DirectoryInfo GetArchiverFolder() => throw new NotImplementedException();
+        public FileInfo GetArchiverExecutable() => throw new NotImplementedException();
         public DirectoryInfo GetModOrganizerFolder() => throw new NotImplementedException();
         public DirectoryInfo GetModsFolder() => throw new NotImplementedException();
         public DirectoryInfo GetModFolder(string modName) => throw new NotImplementedException();
@@ -37,5 +39,6 @@ public static class DesignMocks
         public DirectoryInfo GetProfilesFolder() => throw new NotImplementedException();
         public IEnumerable<DirectoryInfo> GetProfileFolders() => throw new NotImplementedException();
         public void SetModOrganizerFolder(string path) => throw new NotImplementedException();
+        public void SetArchiverFolder(string path) => throw new NotImplementedException();
     }
 }
