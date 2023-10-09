@@ -9,10 +9,11 @@ internal class DirectoryManager : IDirectoryManager
     public const string ArchiverExecutableName = "BSArch.exe";
     public const string ModsFolderName = "mods";
     public const string ProfileFolderName = "profiles";
+    public const string ModListFileName = "modlist.txt";
 
     private DirectoryInfo? _archiver;
     private FileInfo? _archiverExecutable;
-    
+
     private DirectoryInfo? _modOrganizer;
     private DirectoryInfo? _mods;
     private DirectoryInfo? _profiles;
@@ -72,6 +73,21 @@ internal class DirectoryManager : IDirectoryManager
     public DirectoryInfo GetProfilesFolder() => GetDirectory(_profiles);
 
     public IEnumerable<DirectoryInfo> GetProfileFolders() => GetProfilesFolder().EnumerateDirectories();
+
+    public FileInfo GetModList(string profileName)
+    {
+        string profilePath = Path.Combine(GetProfilesFolder().FullName, profileName);
+        DirectoryInfo profileDir = new(profilePath);
+        if (!profileDir.Exists)
+            throw new DirectoryNotFoundException($"Missing profile folder '{profileName}'");
+
+        string filePath = Path.Combine(profilePath, ModListFileName);
+        FileInfo modListFile = new(filePath);
+        if (!modListFile.Exists)
+            throw new FileNotFoundException($"Missing file 'modlist.txt' for profile '{profileName}'");
+
+        return modListFile;
+    }
 
     private static DirectoryInfo GetDirectory(DirectoryInfo? directory)
     {

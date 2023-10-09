@@ -10,4 +10,5 @@ public interface IDirectoryReader
     IEnumerable<DirectoryInfo> GetModFolders();
     DirectoryInfo GetProfilesFolder();
     IEnumerable<DirectoryInfo> GetProfileFolders();
+    FileInfo GetModList(string profileName);
 }

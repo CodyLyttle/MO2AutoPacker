@@ -5,12 +5,16 @@ public class ModList
 {
     private readonly List<IModListItem> _items;
 
-    public ModList(string name, params IModListItem[] items)
+    public ModList(string profileName, params IModListItem[] items)
     {
-        Name = name;
+        ProfileName = profileName;
         _items = items.ToList();
     }
 
+    public string ProfileName { get; }
     public IEnumerable<IModListItem> Items => _items;
-    public string Name { get; }
+    public IEnumerable<ModSeparator> GetSeparators() => _items.OfType<ModSeparator>();
+    public IEnumerable<Mod> GetMods() => _items.OfType<Mod>();
+    public IEnumerable<Mod> GetModsDisabled() => GetMods().Where(m => !m.IsEnabled);
+    public IEnumerable<Mod> GetModsEnabled() => GetMods().Where(m => m.IsEnabled);
 }

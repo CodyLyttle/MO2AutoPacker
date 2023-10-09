@@ -2,15 +2,15 @@
 using MO2AutoPacker.Library.Services.Implementations;
 using MO2AutoPacker.Library.Tests.Helpers;
 
-namespace MO2AutoPacker.Library.Tests.Unit;
+namespace MO2AutoPacker.Library.Tests.Unit.Services;
 
 public class DirectoryManagerTests
 {
     private const string ArchiverFolderName = "Archiver";
     private const string ModOrganizerFolderName = "ModOrganizer";
+    private readonly FileInfo _archiverExecutable;
 
     private readonly TemporaryFolder _archiverFolder;
-    private readonly FileInfo _archiverExecutable;
     private readonly TemporaryFolder _modOrganizerFolder;
     private readonly TemporaryFolder _modsFolder;
     private readonly TemporaryFolder _profilesFolder;
@@ -20,15 +20,15 @@ public class DirectoryManagerTests
     public DirectoryManagerTests()
     {
         _tempDir = new TemporaryDirectory();
-        
+
         _archiverFolder = _tempDir.Root.AddFolder(ArchiverFolderName);
         _archiverFolder.AddFile(DirectoryManager.ArchiverExecutableName);
         _archiverExecutable = _archiverFolder.Directory.GetFiles()[0];
-        
+
         _modOrganizerFolder = _tempDir.Root.AddFolder(ModOrganizerFolderName);
         _modsFolder = _modOrganizerFolder.AddFolder(DirectoryManager.ModsFolderName);
         _profilesFolder = _modOrganizerFolder.AddFolder(DirectoryManager.ProfileFolderName);
-        
+
         _testTarget = new DirectoryManager();
         _testTarget.SetArchiverFolder(_archiverFolder.Directory.FullName);
         _testTarget.SetModOrganizerFolder(_modOrganizerFolder.Directory.FullName);
@@ -177,10 +177,10 @@ public class DirectoryManagerTests
     {
         // Arrange
         _archiverExecutable.Delete();
-        
+
         // Act
         Action act = () => _testTarget.GetArchiverExecutable();
-        
+
         // Assert
         act.Should().Throw<FileNotFoundException>()
             .WithMessage(_archiverExecutable.FullName);

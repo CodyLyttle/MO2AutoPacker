@@ -2,7 +2,7 @@
 using MO2AutoPacker.Library.Services.Implementations;
 using MO2AutoPacker.Library.Tests.Helpers;
 
-namespace MO2AutoPacker.Library.Tests.Unit;
+namespace MO2AutoPacker.Library.Tests.Unit.Services;
 
 // TODO: Refactor DRY.
 public sealed class VirtualAssetRepositoryTests : IDisposable

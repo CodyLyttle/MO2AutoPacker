@@ -1,98 +1,85 @@
-﻿using System.Diagnostics;
-using CommunityToolkit.Mvvm.Messaging;
+﻿using CommunityToolkit.Mvvm.Messaging;
 using MO2AutoPacker.Library.Messages;
 using MO2AutoPacker.Library.Models;
+using MO2AutoPacker.Library.Services;
 using MO2AutoPacker.Library.Tests.Helpers;
 using MO2AutoPacker.Library.ViewModels;
+using Moq;
 
 namespace MO2AutoPacker.Library.Tests.Unit.ViewModels;
 
 public sealed class ModListManagerViewModelTests : IDisposable
 {
-    private const string ModListFileName = "modlist.txt";
-
+    private readonly MessageCollector _messageCollector;
     private readonly IMessenger _messenger;
+    private readonly Mock<IModListReader> _mockReader;
     private readonly TemporaryDirectoryManager _tempDirManager;
     private readonly ModListManagerViewModel _testTarget;
 
     public ModListManagerViewModelTests()
     {
         _messenger = new WeakReferenceMessenger();
+        _messageCollector = new MessageCollector(_messenger);
+        _mockReader = new Mock<IModListReader>();
         _tempDirManager = new TemporaryDirectoryManager();
-        _testTarget = new ModListManagerViewModel(_messenger);
+        _testTarget = new ModListManagerViewModel(_messenger, _mockReader.Object);
     }
 
     public void Dispose() => _tempDirManager.Dispose();
 
     private Profile CreateProfile() => new(_tempDirManager.AddProfileFolder().Directory);
 
+    private void SendProfileChangedMessage(Profile profile) => _messenger.Send(new ProfileChangedMessage(profile));
+
     [Fact]
-    public void Receive_ShouldReceiveProfileChangedMessages()
+    public void Receive_ShouldUpdateModListUsingModListReader()
     {
         // Arrange
         Profile profile = CreateProfile();
-        ModListBuilder.BuildRandom().WriteFile(profile.Directory);
-        ProfileChangedMessage outgoingMsg = new(profile);
+        ModList expected = new(profile.Name, new ModSeparator("A"), new Mod("B", false), new Mod("C", true));
+        _mockReader.Setup(x => x.Read(profile)).Returns(expected);
 
         // Act
-        _messenger.Send(outgoingMsg);
-
-        // Assert
-        Assert.Equal(profile.Name, _testTarget.ModList!.Name);
-    }
-
-    [Fact]
-    public void Receive_ShouldSendBannerError_WhenMissingModListFile()
-    {
-        // Arrange
-        MessageCollector messageCollector = new MessageCollector(_messenger)
-            .AddWhitelist<BannerMessage>();
-        ProfileChangedMessage outgoingMsg = new(CreateProfile());
-
-        // Act
-        _testTarget.Receive(outgoingMsg);
-
-        // Assert
-        var incomingMsg = messageCollector.DequeueMessage<BannerMessage>();
-        Assert.Equal(BannerMessage.Type.Error, incomingMsg.MessageType);
-        Assert.Contains($"missing file '{ModListFileName}'", incomingMsg.Message);
-    }
-
-    [Fact]
-    public void Receive_ShouldReadModsFromModList_WhenModListContains()
-    {
-        // Arrange
-        Profile profile = CreateProfile();
-        var builder = ModListBuilder.BuildRandom();
-        builder.WriteFile(profile.Directory);
-        ProfileChangedMessage outgoingMsg = new(profile);
-
-        // Act
-        _testTarget.Receive(outgoingMsg);
+        SendProfileChangedMessage(profile);
 
         // Assert
         Assert.NotNull(_testTarget.ModList);
-        List<IModListItem> sourceItems = builder.ModListItems.ToList();
-        foreach (IModListItem resultItem in _testTarget.ModList.Items)
-        {
-            for (var i = 0; i < sourceItems.Count; i++)
-            {
-                IModListItem sourceItem = sourceItems[i];
-                if (resultItem.Name != sourceItem.Name)
-                    continue;
+        Assert.Equal(expected, _testTarget.ModList);
+    }
 
-                Debug.WriteLine("Matching name");
-                if ((sourceItem is ModSeparator && resultItem is ModSeparator) ||
-                    (sourceItem is Mod sourceMod && resultItem is Mod resultMod &&
-                     sourceMod.IsEnabled == resultMod.IsEnabled))
-                {
-                    sourceItems.RemoveAt(i);
-                    break;
-                }
-            }
-        }
+    [Fact]
+    public void Receive_ShouldSendBannerError_WhenModListReaderThrowsDirectoryNotFoundException()
+    {
+        // Arrange
+        _messageCollector.AddWhitelist<BannerMessage>();
+        DirectoryNotFoundException ex = new("Missing directory");
+        Profile profile = CreateProfile();
+        _mockReader.Setup(x => x.Read(profile)).Throws(ex);
 
-        // A perfectly parsed mod list results in every source item being matched and removed.
-        Assert.Empty(sourceItems);
+        // Act
+        SendProfileChangedMessage(profile);
+
+        // Assert
+        var message = _messageCollector.DequeueMessage<BannerMessage>();
+        Assert.Equal(ex.Message, message.Message);
+        _messageCollector.AssertEmpty();
+    }
+
+    [Fact]
+    public void Receive_ShouldSendBannerError_WhenModListReaderThrowsFileNotFoundException()
+    {
+        // Arrange
+        _messageCollector.AddWhitelist<BannerMessage>();
+        FileNotFoundException ex = new("Missing file");
+        Profile profile = CreateProfile();
+        _mockReader.Setup(x => x.Read(profile)).Throws(ex);
+
+        // Act
+        SendProfileChangedMessage(profile);
+
+        // Assert
+        var message = _messageCollector.DequeueMessage<BannerMessage>();
+        Assert.Equal(ex.Message, message.Message);
+        _messageCollector.AssertEmpty();
     }
 }

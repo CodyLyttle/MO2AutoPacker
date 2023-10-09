@@ -42,7 +42,10 @@ internal sealed class TemporaryDirectoryManager : IDirectoryManager, IDisposable
 
     public IEnumerable<DirectoryInfo> GetProfileFolders() => _profiles.Directory.EnumerateDirectories();
 
+    public FileInfo GetModList(string profileName) => throw new NotImplementedException();
+
     public void SetModOrganizerFolder(string path) => throw new InvalidOperationException("May only be set internally");
+
     public void SetArchiverFolder(string path) => throw new NotImplementedException();
 
     public void Dispose() => _tempDir.Dispose();

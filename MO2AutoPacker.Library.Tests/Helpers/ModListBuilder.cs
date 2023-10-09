@@ -58,11 +58,14 @@ internal class ModListBuilder
         return this;
     }
 
-    public DirectoryInfo WriteFile(DirectoryInfo directory)
+    public DirectoryInfo WriteFile(DirectoryInfo directory) => WriteFile(directory, out _);
+
+    public DirectoryInfo WriteFile(DirectoryInfo directory, out FileInfo file)
     {
         string path = Path.Combine(directory.FullName, ModListFileName);
         File.WriteAllText(path, ToString());
-        return new DirectoryInfo(path);
+        file = new FileInfo(path);
+        return directory;
     }
 
     public void CreateModDirectories(DirectoryInfo modsDir)
