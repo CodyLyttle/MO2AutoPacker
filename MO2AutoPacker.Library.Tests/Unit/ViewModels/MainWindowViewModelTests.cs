@@ -1,6 +1,7 @@
 ﻿using CommunityToolkit.Mvvm.Messaging;
 using MO2AutoPacker.Library.Messages;
 using MO2AutoPacker.Library.Services;
+using MO2AutoPacker.Library.Services.Implementations;
 using MO2AutoPacker.Library.Tests.Helpers;
 using MO2AutoPacker.Library.Tests.Stubs;
 using MO2AutoPacker.Library.ViewModels;
@@ -15,6 +16,7 @@ public class MainWindowViewModelTests
 
     private readonly IMessenger _messenger;
     private readonly Mock<IDirectoryManager> _mockDirectoryManager;
+    private readonly ModListReader _modListReader;
     private readonly PathPickerStub _pathPicker;
     private readonly MainWindowViewModel _testTarget;
 
@@ -23,7 +25,8 @@ public class MainWindowViewModelTests
         _messenger = new WeakReferenceMessenger();
         _pathPicker = new PathPickerStub();
         _mockDirectoryManager = new Mock<IDirectoryManager>();
-        _testTarget = new MainWindowViewModel(_messenger, _pathPicker, _mockDirectoryManager.Object)
+        _modListReader = new ModListReader(_mockDirectoryManager.Object);
+        _testTarget = new MainWindowViewModel(_messenger, _pathPicker, _mockDirectoryManager.Object, _modListReader)
         {
             ModOrganizerPath = InitialPath
         };

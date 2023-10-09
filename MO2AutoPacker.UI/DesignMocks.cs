@@ -17,7 +17,7 @@ public static class DesignMocks
     private static readonly IPathPicker PathPicker = new WindowsPathPicker();
     private static readonly IModListReader ModListReader = new DesignModListReader();
 
-    public static readonly MainWindowViewModel MainWindow = new(Messenger, PathPicker, DirectoryManager);
+    public static readonly MainWindowViewModel MainWindow = new(Messenger, PathPicker, DirectoryManager, ModListReader);
 
     public static readonly BannerViewModel Banner = new(Messenger, Dispatcher);
 
