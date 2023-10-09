@@ -4,7 +4,8 @@ namespace MO2AutoPacker.Library.Services;
 
 public interface IVirtualAssetRepository
 {
-    int FileCount { get; }
+    int AddedFileCount { get; }
+    int UniqueFileCount { get; }
     void AddMod(Mod mod);
     IEnumerable<VirtualArchive> CreateVirtualArchives();
 }

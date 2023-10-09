@@ -50,6 +50,36 @@ public sealed class VirtualAssetRepositoryTests : IDisposable
     }
 
     [Fact]
+    public void AddMod_ShouldAddFilePathsFromAssetFolders_WhenAssetFolderCaseMismatch()
+    {
+        // Arrange
+        Mod mod = GetRandomMod();
+
+        // Randomize lower/upper case of asset folder name. 
+        char[] assetFolderChars = VirtualAssetRepository.AssetFolderNames[0].ToArray();
+        for (var i = 0; i < assetFolderChars.Length; i++)
+        {
+            assetFolderChars[i] = i % 2 == 0
+                    ? char.ToLower(assetFolderChars[i])
+                    : char.ToUpper(assetFolderChars[i]);
+        }
+        var assetFolderName = new string(assetFolderChars);
+        
+        _tempDirManager
+            .AddModFolder(mod.Name)
+            .AddFolder(assetFolderName)
+            .AddFile(out FileInfo expected);
+        
+        // Act
+        _testTarget.AddMod(mod);
+
+        // Assert
+        FileInfo[] assetFiles = _testTarget.GetAssetFiles();
+        Assert.Single(assetFiles);
+        Assert.Equal(expected.FullName, assetFiles[0].FullName);
+    }
+
+    [Fact]
     public void AddMod_ShouldAddFilePathsFromNestedAssetFolders()
     {
         // Arrange
