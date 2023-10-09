@@ -20,6 +20,7 @@ public static class Bootstrapper
             .AddSingleton<DirectoryManager>()
             .AddSingleton<IDirectoryManager>(x => x.GetRequiredService<DirectoryManager>())
             .AddSingleton<IDirectoryReader>(x => x.GetRequiredService<DirectoryManager>())
+            .AddSingleton<IModListReader, ModListReader>()
             .AddSingleton<IVirtualAssetRepository, VirtualAssetRepository>()
             .AddSingleton<IMessenger, WeakReferenceMessenger>()
             // View models.
