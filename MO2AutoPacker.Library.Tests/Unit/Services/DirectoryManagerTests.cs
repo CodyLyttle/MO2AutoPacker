@@ -1,6 +1,7 @@
 ﻿using FluentAssertions;
 using MO2AutoPacker.Library.Services.Implementations;
 using MO2AutoPacker.Library.Tests.Helpers;
+using MO2AutoPacker.Library.Tests.Stubs;
 
 namespace MO2AutoPacker.Library.Tests.Unit.Services;
 
@@ -13,6 +14,7 @@ public class DirectoryManagerTests
     private readonly TemporaryFolder _archiverFolder;
     private readonly TemporaryFolder _modOrganizerFolder;
     private readonly TemporaryFolder _modsFolder;
+    private readonly PathReaderStub _pathReader;
     private readonly TemporaryFolder _profilesFolder;
     private readonly TemporaryDirectory _tempDir;
     private readonly DirectoryManager _testTarget;
@@ -27,9 +29,10 @@ public class DirectoryManagerTests
 
         _modOrganizerFolder = _tempDir.Root.AddFolder(ModOrganizerFolderName);
         _modsFolder = _modOrganizerFolder.AddFolder(DirectoryManager.ModsFolderName);
-        _profilesFolder = _modOrganizerFolder.AddFolder(DirectoryManager.ProfileFolderName);
+        _profilesFolder = _modOrganizerFolder.AddFolder(DirectoryManager.ProfilesFolderName);
 
-        _testTarget = new DirectoryManager();
+        _pathReader = new PathReaderStub();
+        _testTarget = new DirectoryManager(_pathReader);
         _testTarget.SetArchiverFolder(_archiverFolder.Directory.FullName);
         _testTarget.SetModOrganizerFolder(_modOrganizerFolder.Directory.FullName);
     }
@@ -152,7 +155,7 @@ public class DirectoryManagerTests
     public void VariousGetters_ShouldThrowInvalidOperationException_BeforeCallingRespectiveInitializer()
     {
         // Arrange
-        DirectoryManager uninitialized = new();
+        DirectoryManager uninitialized = new(_pathReader);
         Action[] actions =
         {
             () => _ = uninitialized.GetArchiverFolder(),

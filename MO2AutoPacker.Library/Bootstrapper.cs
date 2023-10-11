@@ -17,6 +17,7 @@ public static class Bootstrapper
             // Services
             .AddSingleton(dispatcher)
             .AddSingleton(pathPicker)
+            .AddSingleton<IPathReader, PathReader>()
             .AddSingleton<DirectoryManager>()
             .AddSingleton<IDirectoryManager>(x => x.GetRequiredService<DirectoryManager>())
             .AddSingleton<IDirectoryReader>(x => x.GetRequiredService<DirectoryManager>())

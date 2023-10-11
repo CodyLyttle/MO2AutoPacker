@@ -17,7 +17,8 @@ public static class DesignMocks
     private static readonly IPathPicker PathPicker = new WindowsPathPicker();
     private static readonly IModListReader ModListReader = new DesignModListReader();
 
-    public static readonly MainWindowViewModel MainWindow = new(Messenger, PathPicker, DirectoryManager, ModListReader);
+    public static readonly MainWindowViewModel MainWindow = new(Messenger, PathPicker, DirectoryManager,
+        ModListReader);
 
     public static readonly BannerViewModel Banner = new(Messenger, Dispatcher);
 
@@ -31,6 +32,9 @@ public static class DesignMocks
 
     private class DesignDirectoryManager : IDirectoryManager
     {
+        public bool IsArchiverDirectoryInitialized => false;
+        public bool IsModOrganizerDirectoryInitialized => false;
+
         public DirectoryInfo GetArchiverFolder() => throw new NotImplementedException();
         public FileInfo GetArchiverExecutable() => throw new NotImplementedException();
         public DirectoryInfo GetModOrganizerFolder() => throw new NotImplementedException();

@@ -6,9 +6,11 @@ namespace MO2AutoPacker.Library.Services.Implementations;
 
 internal class DirectoryManager : IDirectoryManager
 {
-    public const string ArchiverExecutableName = "BSArch.exe";
+    public const string ArchiverVariableName = "BSARCH";
+    public const string ModOrganizerVariableName = "MO2_OBLIVION";
     public const string ModsFolderName = "mods";
-    public const string ProfileFolderName = "profiles";
+    public const string ProfilesFolderName = "profiles";
+    public const string ArchiverExecutableName = "BSArch.exe";
     public const string ModListFileName = "modlist.txt";
 
     private DirectoryInfo? _archiver;
@@ -18,6 +20,14 @@ internal class DirectoryManager : IDirectoryManager
     private DirectoryInfo? _mods;
     private DirectoryInfo? _profiles;
 
+    public DirectoryManager(IPathReader pathReader)
+    {
+        InitializeArchiver(pathReader);
+        InitializeModOrganizer(pathReader);
+    }
+
+    public bool IsArchiverDirectoryInitialized => _archiver is not null;
+    public bool IsModOrganizerDirectoryInitialized => _modOrganizer is not null;
 
     public void SetModOrganizerFolder(string path)
     {
@@ -28,9 +38,9 @@ internal class DirectoryManager : IDirectoryManager
         if (!Path.Exists(modsPath))
             throw new DirectoryNotFoundException($"Missing folder in MO2 directory '{ModsFolderName}'");
 
-        string profilesPath = Path.Combine(path, ProfileFolderName);
+        string profilesPath = Path.Combine(path, ProfilesFolderName);
         if (!Path.Exists(profilesPath))
-            throw new DirectoryNotFoundException($"Missing folder in MO2 directory '{ProfileFolderName}'");
+            throw new DirectoryNotFoundException($"Missing folder in MO2 directory '{ProfilesFolderName}'");
 
         _modOrganizer = new DirectoryInfo(path);
         _mods = new DirectoryInfo(modsPath);
@@ -87,6 +97,43 @@ internal class DirectoryManager : IDirectoryManager
             throw new FileNotFoundException($"Missing file 'modlist.txt' for profile '{profileName}'");
 
         return modListFile;
+    }
+
+    private void InitializeArchiver(IPathReader pathReader)
+    {
+        _archiverExecutable = pathReader.GetFileFromWorkingDirectory(ArchiverExecutableName)
+                              ?? pathReader.GetFileFromEnvironmentVariable(ArchiverVariableName)
+                              ?? null;
+
+        _archiver = _archiverExecutable?.Directory;
+    }
+
+    private void InitializeModOrganizer(IPathReader pathReader)
+    {
+        // From working directory.
+        DirectoryInfo? modsFolder = pathReader.GetFolderFromWorkingDirectory(ModsFolderName);
+        DirectoryInfo? profilesFolder = pathReader.GetFolderFromWorkingDirectory(ProfilesFolderName);
+        if (modsFolder is not null && profilesFolder is not null)
+        {
+            _modOrganizer = pathReader.GetWorkingDirectory();
+            _mods = modsFolder;
+            _profiles = profilesFolder;
+            return;
+        }
+
+        // From environment variable.
+        DirectoryInfo? modOrganizerFolder = pathReader.GetFolderFromEnvironmentVariable(ModOrganizerVariableName);
+        if (modOrganizerFolder is null)
+            return;
+
+        string modsFolderPath = Path.Combine(modOrganizerFolder.FullName, ModsFolderName);
+        string profilesFolderPath = Path.Combine(modOrganizerFolder.FullName, ProfilesFolderName);
+        if (!Directory.Exists(modsFolderPath) || !Directory.Exists(profilesFolderPath))
+            return;
+
+        _modOrganizer = modOrganizerFolder;
+        _mods = new DirectoryInfo(modsFolderPath);
+        _profiles = new DirectoryInfo(profilesFolderPath);
     }
 
     private static DirectoryInfo GetDirectory(DirectoryInfo? directory)

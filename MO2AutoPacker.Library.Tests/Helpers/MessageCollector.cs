@@ -40,7 +40,11 @@ internal sealed class MessageCollector
         return (T) _messages.Dequeue();
     }
 
+    public void Clear() => _messages.Clear();
+
     public void AssertEmpty() => Assert.Empty(_messages);
+
+    public void AssertCount(int expected) => Assert.Equal(expected, _messages.Count);
 
     public void AssertCount<T>(int expected) where T : class => Assert.Equal(expected, _messages.OfType<T>().Count());
 }

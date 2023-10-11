@@ -16,8 +16,12 @@ internal sealed class TemporaryDirectoryManager : IDirectoryManager, IDisposable
         _archiver = _tempDir.Root.AddFolder("Archiver")
             .AddFile(DirectoryManager.ArchiverExecutableName);
         _mods = _tempDir.Root.AddFolder(DirectoryManager.ModsFolderName);
-        _profiles = _tempDir.Root.AddFolder(DirectoryManager.ProfileFolderName);
+        _profiles = _tempDir.Root.AddFolder(DirectoryManager.ProfilesFolderName);
     }
+
+    public bool IsArchiverDirectoryInitialized => true;
+
+    public bool IsModOrganizerDirectoryInitialized => true;
 
     public DirectoryInfo GetArchiverFolder() => _archiver.Directory;
 

@@ -2,6 +2,9 @@
 
 public interface IDirectoryReader
 {
+    bool IsArchiverDirectoryInitialized { get; }
+    bool IsModOrganizerDirectoryInitialized { get; }
+
     DirectoryInfo GetArchiverFolder();
     FileInfo GetArchiverExecutable();
     DirectoryInfo GetModOrganizerFolder();

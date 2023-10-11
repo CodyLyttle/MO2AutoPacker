@@ -12,30 +12,37 @@ namespace MO2AutoPacker.Library.ViewModels;
 public partial class MainWindowViewModel : ViewModelBase, IRecipient<ProfileChangedMessage>
 {
     private readonly IDirectoryManager _directoryManager;
-    private readonly IModListReader _modListReader;
     private readonly IMessenger _messenger;
+    private readonly IModListReader _modListReader;
     private readonly IPathPicker _pathPicker;
 
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(CanPackArchive))]
-    private string _archiverPath = string.Empty;
+    private string _archiverPath;
 
-    [ObservableProperty]
-    [NotifyPropertyChangedFor(nameof(CanPackArchive))]
-    private string _modOrganizerPath = string.Empty;
+    // Nullable initializer prevents constructor warning when setting initial value via property.
+    private string _modOrganizerPath = null!;
 
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(CanPackArchive))]
     private Profile? _selectedProfile;
 
-    public MainWindowViewModel(IMessenger messenger, IPathPicker pathPicker, IDirectoryManager directoryManager,
-        IModListReader modListReader)
+    public MainWindowViewModel(IMessenger messenger, IPathPicker pathPicker,
+        IDirectoryManager directoryManager, IModListReader modListReader)
     {
         _messenger = messenger;
         _messenger.Register(this);
         _pathPicker = pathPicker;
         _directoryManager = directoryManager;
         _modListReader = modListReader;
+
+        ArchiverPath = directoryManager.IsArchiverDirectoryInitialized
+            ? directoryManager.GetArchiverFolder().FullName
+            : string.Empty;
+
+        ModOrganizerPath = directoryManager.IsModOrganizerDirectoryInitialized
+            ? directoryManager.GetModOrganizerFolder().FullName
+            : string.Empty;
 
         // TODO: Remove temporary workaround.
         // PackArchiveCommand.CanExecute isn't updating when ParkArchiveCommand changes.
@@ -45,6 +52,21 @@ public partial class MainWindowViewModel : ViewModelBase, IRecipient<ProfileChan
             if (name is nameof(ModOrganizerPath) or nameof(ArchiverPath) or nameof(SelectedProfile))
                 PackArchiveCommand.NotifyCanExecuteChanged();
         };
+    }
+
+    public string ModOrganizerPath
+    {
+        get => _modOrganizerPath;
+        set
+        {
+            if (value == _modOrganizerPath)
+                return;
+
+            _modOrganizerPath = value;
+            OnPropertyChanged();
+            OnPropertyChanged(nameof(CanPackArchive));
+            _messenger.Send(new ModOrganizerPathChangedMessage());
+        }
     }
 
     public bool CanPackArchive =>
@@ -71,10 +93,7 @@ public partial class MainWindowViewModel : ViewModelBase, IRecipient<ProfileChan
         catch (DirectoryNotFoundException ex)
         {
             _messenger.Send(new BannerMessage(BannerMessage.Type.Error, ex.Message));
-            return;
         }
-
-        _messenger.Send(new ModOrganizerPathChangedMessage());
     }
 
     [RelayCommand]
