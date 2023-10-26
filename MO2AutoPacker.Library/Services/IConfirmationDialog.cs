@@ -2,5 +2,5 @@
 
 public interface IConfirmationDialog
 {
-    bool PromptUser(string title, string caption);
+    bool PromptUser(string title, string description);
 }

@@ -13,7 +13,7 @@ public partial class App : Application
     {
         DispatcherUnhandledException += OnDispatcherUnhandledException;
 
-        Services = Bootstrapper.CreateServiceProvider(new WindowsConfirmationDialog(),
+        Services = Bootstrapper.Bootstrap(new WindowsConfirmationDialog(),
             new WpfDispatcher(),
             new WindowsPathPicker());
 

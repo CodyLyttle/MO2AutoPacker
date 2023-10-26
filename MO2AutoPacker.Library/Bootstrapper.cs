@@ -1,8 +1,12 @@
-﻿using CommunityToolkit.Mvvm.Messaging;
+﻿using System.Diagnostics;
+using CommunityToolkit.Mvvm.Messaging;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
+using MO2AutoPacker.Library.Logging;
 using MO2AutoPacker.Library.Services;
 using MO2AutoPacker.Library.Services.Implementations;
 using MO2AutoPacker.Library.ViewModels;
+using Serilog;
 
 namespace MO2AutoPacker.Library;
 
@@ -12,11 +16,11 @@ namespace MO2AutoPacker.Library;
 // Subject to change if further features are required, such as swapping dependencies at run-time.
 public static class Bootstrapper
 {
-    public static IServiceProvider CreateServiceProvider(IConfirmationDialog dialog,
+    public static IServiceProvider Bootstrap(IConfirmationDialog dialog,
         IUIThreadDispatcher dispatcher,
         IPathPicker pathPicker)
     {
-        IServiceCollection services = new ServiceCollection()
+        IServiceProvider serviceProvider = new ServiceCollection()
             // Services
             .AddSingleton(dialog)
             .AddSingleton(dispatcher)
@@ -32,8 +36,26 @@ public static class Bootstrapper
             .AddSingleton<MainWindowViewModel>()
             .AddSingleton<BannerViewModel>()
             .AddSingleton<ProfileSelectorViewModel>()
-            .AddSingleton<ModListManagerViewModel>();
+            .AddSingleton<ModListManagerViewModel>()
+            .BuildServiceProvider();
 
-        return services.BuildServiceProvider();
+        InitAmbientContext(serviceProvider);
+
+        return serviceProvider;
+    }
+
+    private static void InitAmbientContext(IServiceProvider serviceProvider)
+    {
+        var messenger = serviceProvider.GetService<IMessenger>();
+        Debug.Assert(messenger is not null);
+
+        Logger.Current = LoggerFactory.Create(builder => builder
+                .AddProvider(new MessengerLoggerProvider(messenger))
+                .AddSerilog(new LoggerConfiguration()
+                    .MinimumLevel.Verbose()
+                    .WriteTo.Debug()
+                    .WriteTo.File("log-.txt", rollingInterval: RollingInterval.Day)
+                    .CreateLogger()))
+            .CreateLogger(nameof(MO2AutoPacker));
     }
 }

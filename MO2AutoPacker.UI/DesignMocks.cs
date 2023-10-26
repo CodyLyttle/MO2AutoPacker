@@ -16,8 +16,9 @@ public static class DesignMocks
     private static readonly IUIThreadDispatcher Dispatcher = new WpfDispatcher();
     private static readonly IPathPicker PathPicker = new WindowsPathPicker();
     private static readonly IModListReader ModListReader = new DesignModListReader();
+    private static readonly IConfirmationDialog Dialog = new WindowsConfirmationDialog();
 
-    public static readonly MainWindowViewModel MainWindow = new(Messenger, PathPicker, DirectoryManager,
+    public static readonly MainWindowViewModel MainWindow = new(Messenger, Dialog, PathPicker, DirectoryManager,
         ModListReader);
 
     public static readonly BannerViewModel Banner = new(Messenger, Dispatcher);

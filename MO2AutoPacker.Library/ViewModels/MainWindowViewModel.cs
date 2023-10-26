@@ -2,6 +2,8 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using CommunityToolkit.Mvvm.Messaging;
+using Microsoft.Extensions.Logging;
+using MO2AutoPacker.Library.Logging;
 using MO2AutoPacker.Library.Messages;
 using MO2AutoPacker.Library.Models;
 using MO2AutoPacker.Library.Services;
@@ -11,6 +13,7 @@ namespace MO2AutoPacker.Library.ViewModels;
 
 public partial class MainWindowViewModel : ViewModelBase, IRecipient<ProfileChangedMessage>
 {
+    private readonly IConfirmationDialog _confirmationDialog;
     private readonly IDirectoryManager _directoryManager;
     private readonly IMessenger _messenger;
     private readonly IModListReader _modListReader;
@@ -27,11 +30,12 @@ public partial class MainWindowViewModel : ViewModelBase, IRecipient<ProfileChan
     [NotifyPropertyChangedFor(nameof(CanPackArchive))]
     private Profile? _selectedProfile;
 
-    public MainWindowViewModel(IMessenger messenger, IPathPicker pathPicker,
+    public MainWindowViewModel(IMessenger messenger, IConfirmationDialog confirmationDialog, IPathPicker pathPicker,
         IDirectoryManager directoryManager, IModListReader modListReader)
     {
         _messenger = messenger;
         _messenger.Register(this);
+        _confirmationDialog = confirmationDialog;
         _pathPicker = pathPicker;
         _directoryManager = directoryManager;
         _modListReader = modListReader;
@@ -118,20 +122,31 @@ public partial class MainWindowViewModel : ViewModelBase, IRecipient<ProfileChan
     [RelayCommand(CanExecute = nameof(CanPackArchive))]
     private void PackArchive()
     {
-        Debug.WriteLine("Start packing archive");
-        Stopwatch sw = new();
-        sw.Start();
-
         ModList modList = _modListReader.Read(SelectedProfile!);
         VirtualAssetRepository virtualRepo = new(_directoryManager);
+        var sw = Stopwatch.StartNew();
+
+        Logger.Current.LogInformation("Begin packing archive");
+
         foreach (Mod mod in modList.GetModsEnabled())
             virtualRepo.AddMod(mod);
 
-        var count = 0;
+        var packedArchiveCount = 0;
+        var fileSum = 0;
         foreach (VirtualArchive arch in virtualRepo.CreateVirtualArchives())
-            Debug.WriteLine($"Archive #{count++}: {arch.FileCount} files");
+        {
+            int fileCount = arch.FileCount;
+            fileSum += fileCount;
+
+            Logger.Current.LogInformation("Archive #{ArchiveIndex}: {FileCount} files",
+                packedArchiveCount++, fileCount);
+        }
 
         sw.Stop();
-        Debug.WriteLine($"Packed {count} archives in {sw.ElapsedMilliseconds}");
+        Logger.Current.LogInformation("Packed {ArchiveCount} archives in {ElapsedMS}ms",
+            packedArchiveCount, sw.ElapsedMilliseconds);
+
+        _confirmationDialog.PromptUser($"Archive profile '{SelectedProfile?.Name}'",
+            $"Create {packedArchiveCount} archives from {fileSum} files?");
     }
 }

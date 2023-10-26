@@ -14,6 +14,7 @@ public class MainWindowViewModelTests
 {
     private const string InitialPath = @"C:\InitialPath";
     private const string UpdatedPath = @"C:\UpdatedPath";
+    private readonly ConfirmationDialogStub _confirmationDialog;
 
     private readonly IMessenger _messenger;
     private readonly Mock<IDirectoryManager> _mockDirectoryManager;
@@ -26,8 +27,10 @@ public class MainWindowViewModelTests
         _messenger = new WeakReferenceMessenger();
         _pathPicker = new PathPickerStub();
         _mockDirectoryManager = new Mock<IDirectoryManager>();
+        _confirmationDialog = new ConfirmationDialogStub(true);
         _modListReader = new ModListReader(_mockDirectoryManager.Object);
-        _testTarget = new MainWindowViewModel(_messenger, _pathPicker, _mockDirectoryManager.Object,
+        _testTarget = new MainWindowViewModel(_messenger, _confirmationDialog, _pathPicker,
+            _mockDirectoryManager.Object,
             _modListReader);
     }
 
@@ -47,7 +50,8 @@ public class MainWindowViewModelTests
         _mockDirectoryManager.Setup(x => x.IsModOrganizerDirectoryInitialized).Returns(true);
         _mockDirectoryManager.Setup(x => x.GetArchiverFolder()).Returns(tempDir.GetArchiverFolder);
         _mockDirectoryManager.Setup(x => x.GetModOrganizerFolder()).Returns(tempDir.GetModOrganizerFolder);
-        _testTarget = new MainWindowViewModel(_messenger, _pathPicker, _mockDirectoryManager.Object,
+        _testTarget = new MainWindowViewModel(_messenger, _confirmationDialog, _pathPicker,
+            _mockDirectoryManager.Object,
             _modListReader);
 
         // Assert
