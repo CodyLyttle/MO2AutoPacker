@@ -12,9 +12,13 @@ namespace MO2AutoPacker.Library;
 // Subject to change if further features are required, such as swapping dependencies at run-time.
 public static class Bootstrapper
 {
-    public static IServiceProvider CreateServiceProvider(IUIThreadDispatcher dispatcher, IPathPicker pathPicker) =>
-        new ServiceCollection()
+    public static IServiceProvider CreateServiceProvider(IConfirmationDialog dialog,
+        IUIThreadDispatcher dispatcher,
+        IPathPicker pathPicker)
+    {
+        IServiceCollection services = new ServiceCollection()
             // Services
+            .AddSingleton(dialog)
             .AddSingleton(dispatcher)
             .AddSingleton(pathPicker)
             .AddSingleton<IPathReader, PathReader>()
@@ -28,6 +32,8 @@ public static class Bootstrapper
             .AddSingleton<MainWindowViewModel>()
             .AddSingleton<BannerViewModel>()
             .AddSingleton<ProfileSelectorViewModel>()
-            .AddSingleton<ModListManagerViewModel>()
-            .BuildServiceProvider();
+            .AddSingleton<ModListManagerViewModel>();
+
+        return services.BuildServiceProvider();
+    }
 }
