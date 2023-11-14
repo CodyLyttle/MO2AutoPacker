@@ -1,4 +1,6 @@
 ﻿using System.Runtime.CompilerServices;
+using Microsoft.Extensions.Logging;
+using MO2AutoPacker.Library.Logging;
 using MO2AutoPacker.Library.Models;
 
 [assembly: InternalsVisibleTo("MO2AutoPacker.Library.Tests")]
@@ -34,6 +36,7 @@ internal class VirtualAssetRepository : IVirtualAssetRepository
     public long ArchiveSizeInBytes { get; internal set; } = int.MaxValue - 1024;
 
     public int AddedFileCount { get; private set; }
+
     public int UniqueFileCount
     {
         get
@@ -49,6 +52,8 @@ internal class VirtualAssetRepository : IVirtualAssetRepository
     {
         lock (_assetsLock)
         {
+            Logger.Current.LogTrace("Adding mod '{ModName}'", mod.Name);
+
             DirectoryInfo modDir = _directoryReader.GetModFolder(mod.Name);
             IEnumerable<DirectoryInfo> assetDirectories = modDir.GetDirectories()
                 .Where(dir => AssetFolderNames.Contains(dir.Name, StringComparer.InvariantCultureIgnoreCase));
@@ -64,16 +69,21 @@ internal class VirtualAssetRepository : IVirtualAssetRepository
         }
     }
 
-    // TODO: Ensure exceptions are handled and converted to banner messages by the calling viewmodel.
-    public IEnumerable<VirtualArchive> CreateVirtualArchives()
+    public IEnumerable<VirtualArchive> CreateVirtualArchives(CancellationToken? token = null)
     {
         lock (_assetsLock)
         {
+            if (token is {IsCancellationRequested: true})
+                throw new TaskCanceledException();
+
             VirtualArchive archive = new(ArchiveSizeInBytes);
 
             using Dictionary<string, DirectoryInfo>.Enumerator pathPairs = _assetRepository.GetEnumerator();
             while (pathPairs.MoveNext())
             {
+                if (token is {IsCancellationRequested: true})
+                    throw new TaskCanceledException();
+
                 FileInfo fileInfo = GetFile(pathPairs.Current);
                 long size = fileInfo.Length;
                 if (size > ArchiveSizeInBytes)

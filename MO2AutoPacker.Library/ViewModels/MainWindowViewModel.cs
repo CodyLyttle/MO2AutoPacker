@@ -18,6 +18,7 @@ public partial class MainWindowViewModel : ViewModelBase, IRecipient<ProfileChan
     private readonly IMessenger _messenger;
     private readonly IModListReader _modListReader;
     private readonly IPathPicker _pathPicker;
+    private readonly IUIThreadDispatcher _dispatcher;
 
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(CanPackArchive))]
@@ -30,13 +31,17 @@ public partial class MainWindowViewModel : ViewModelBase, IRecipient<ProfileChan
     [NotifyPropertyChangedFor(nameof(CanPackArchive))]
     private Profile? _selectedProfile;
 
+    [ObservableProperty]
+    private bool _isPackingArchives;
+
     public MainWindowViewModel(IMessenger messenger, IConfirmationDialog confirmationDialog, IPathPicker pathPicker,
-        IDirectoryManager directoryManager, IModListReader modListReader)
+        IDirectoryManager directoryManager, IModListReader modListReader, IUIThreadDispatcher dispatcher)
     {
         _messenger = messenger;
         _messenger.Register(this);
         _confirmationDialog = confirmationDialog;
         _pathPicker = pathPicker;
+        _dispatcher = dispatcher;
         _directoryManager = directoryManager;
         _modListReader = modListReader;
 
@@ -48,15 +53,28 @@ public partial class MainWindowViewModel : ViewModelBase, IRecipient<ProfileChan
             ? directoryManager.GetModOrganizerFolder().FullName
             : string.Empty;
 
-        // TODO: Remove temporary workaround.
-        // PackArchiveCommand.CanExecute isn't updating when ParkArchiveCommand changes.
+        PackModsCommand = new CancellableCommand(dispatcher, PackArchive)
+        {
+            CanBegin = CanPackArchive
+        };
+
+        PackModsCommand.Completed += (_, success) =>
+        {
+            if (!success)
+            {
+                PackModsCommand.ResetFailedCommand();
+                Logger.Current.LogInformation("Cancelled archive task");
+            }
+        };
+
         PropertyChanged += (_, args) =>
         {
-            string name = args.PropertyName!;
-            if (name is nameof(ModOrganizerPath) or nameof(ArchiverPath) or nameof(SelectedProfile))
-                PackArchiveCommand.NotifyCanExecuteChanged();
+            if (args.PropertyName is nameof(CanPackArchive))
+                PackModsCommand.CanBegin = CanPackArchive;
         };
     }
+
+    public CancellableCommand PackModsCommand { get; }
 
     public string ModOrganizerPath
     {
@@ -73,7 +91,7 @@ public partial class MainWindowViewModel : ViewModelBase, IRecipient<ProfileChan
         }
     }
 
-    public bool CanPackArchive =>
+    private bool CanPackArchive =>
         Path.Exists(ModOrganizerPath)
         && Path.Exists(ArchiverPath)
         && SelectedProfile is not null;
@@ -119,22 +137,28 @@ public partial class MainWindowViewModel : ViewModelBase, IRecipient<ProfileChan
         }
     }
 
-    [RelayCommand(CanExecute = nameof(CanPackArchive))]
-    private void PackArchive()
+    private Task PackArchive(CancellationToken token)
     {
+        ThrowIfCancelled();
+
         ModList modList = _modListReader.Read(SelectedProfile!);
         VirtualAssetRepository virtualRepo = new(_directoryManager);
-        var sw = Stopwatch.StartNew();
-
-        Logger.Current.LogInformation("Begin packing archive");
-
-        foreach (Mod mod in modList.GetModsEnabled())
-            virtualRepo.AddMod(mod);
-
         var packedArchiveCount = 0;
         var fileSum = 0;
+
+        Logger.Current.LogInformation("Creating virtual archives for profile '{ProfileName}'",
+            SelectedProfile!.Name);
+
+        var sw = Stopwatch.StartNew();
+        foreach (Mod mod in modList.GetModsEnabled())
+        {
+            ThrowIfCancelled();
+            virtualRepo.AddMod(mod);
+        }
+
         foreach (VirtualArchive arch in virtualRepo.CreateVirtualArchives())
         {
+            ThrowIfCancelled();
             int fileCount = arch.FileCount;
             fileSum += fileCount;
 
@@ -146,7 +170,23 @@ public partial class MainWindowViewModel : ViewModelBase, IRecipient<ProfileChan
         Logger.Current.LogInformation("Packed {ArchiveCount} archives in {ElapsedMS}ms",
             packedArchiveCount, sw.ElapsedMilliseconds);
 
+        ThrowIfCancelled();
+        
+        // Disable UI until dialog closed.
+        _dispatcher.Invoke(() => IsEnabled = false);
+        
+        // Prompt user before creating real archives.
         _confirmationDialog.PromptUser($"Archive profile '{SelectedProfile?.Name}'",
             $"Create {packedArchiveCount} archives from {fileSum} files?");
+        
+        _dispatcher.Invoke(() => IsEnabled = true);
+        
+        return Task.CompletedTask;
+
+        void ThrowIfCancelled()
+        {
+            if (token.IsCancellationRequested)
+                throw new OperationCanceledException(token);
+        }
     }
 }

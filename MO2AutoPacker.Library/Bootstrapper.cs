@@ -35,8 +35,9 @@ public static class Bootstrapper
             // View models.
             .AddSingleton<MainWindowViewModel>()
             .AddSingleton<BannerViewModel>()
-            .AddSingleton<ProfileSelectorViewModel>()
             .AddSingleton<ModListManagerViewModel>()
+            .AddSingleton<ProfileSelectorViewModel>()
+            .AddSingleton<ProgressLogViewModel>()
             .BuildServiceProvider();
 
         InitAmbientContext(serviceProvider);

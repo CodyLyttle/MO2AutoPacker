@@ -19,13 +19,15 @@ public static class DesignMocks
     private static readonly IConfirmationDialog Dialog = new WindowsConfirmationDialog();
 
     public static readonly MainWindowViewModel MainWindow = new(Messenger, Dialog, PathPicker, DirectoryManager,
-        ModListReader);
+        ModListReader, Dispatcher);
 
     public static readonly BannerViewModel Banner = new(Messenger, Dispatcher);
 
     public static readonly ProfileSelectorViewModel ProfileSelector = new(Messenger, DirectoryManager);
 
     public static readonly ModListManagerViewModel ModListManager = new(Messenger, ModListReader);
+
+    public static readonly ProgressLogViewModel ProgressLog = new(Messenger);
 
     public static readonly Mod Mod = new("My Mod", true);
 

@@ -7,5 +7,5 @@ public interface IVirtualAssetRepository
     int AddedFileCount { get; }
     int UniqueFileCount { get; }
     void AddMod(Mod mod);
-    IEnumerable<VirtualArchive> CreateVirtualArchives();
+    IEnumerable<VirtualArchive> CreateVirtualArchives(CancellationToken? token = null);
 }

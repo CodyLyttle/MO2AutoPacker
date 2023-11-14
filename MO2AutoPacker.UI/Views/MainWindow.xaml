@@ -13,7 +13,8 @@
         Title="Auto-Packer for MO2" Height="800" Width="1200"
         SnapsToDevicePixels="True"
         MinWidth="800"
-        MinHeight="400">
+        MinHeight="400"
+        IsEnabled="{Binding IsEnabled}">
     <Window.Resources>
         <ResourceDictionary>
             <Color x:Key="PrimaryColor">#FAFAFA</Color>
@@ -131,10 +132,22 @@
                             </ComboBox.ItemTemplate>
                         </ComboBox>
 
-                        <Button Command="{Binding PackArchiveCommand, UpdateSourceTrigger=PropertyChanged}"
-                                Content="Pack Archives"
-                                Height="32"
-                                Margin="0 12 0 0" />
+                        <Button Height="32"
+                                Margin="0 12 0 0">
+                            <Button.Style>
+                                <Style TargetType="Button">
+                                    <Style.Setters>
+                                        <Setter Property="Content" Value="Create Archives"/>
+                                        <Setter Property="Command" Value="{Binding PackModsCommand, UpdateSourceTrigger=PropertyChanged}"/>
+                                    </Style.Setters>
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding PackModsCommand.IsRunning, UpdateSourceTrigger=PropertyChanged}" Value="True">
+                                            <Setter Property="Content" Value="Cancel"></Setter>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </Button.Style>
+                        </Button>
                     </StackPanel>
 
                     <local:ModListManager DockPanel.Dock="Bottom"
@@ -147,8 +160,21 @@
             <!-- Right content -->
             <Border Grid.Column="2"
                     Grid.Row="1"
-                    Style="{StaticResource ContentBorder}" />
+                    Style="{StaticResource ContentBorder}">
+
+                <ScrollViewer VerticalScrollBarVisibility="Visible">
+                    <TextBlock x:Name="ProgressLog"
+                               d:DataContext="{x:Static root:DesignMocks.ProgressLog}"
+                               attached:ViewModelProviderAttachedProperty.ViewModelProvider="{x:Type vm:ProgressLogViewModel}"
+                               Text="{Binding LogContent}"
+                               Padding="16, 4"
+                               FontSize="12"
+                               HorizontalAlignment="Stretch"
+                               VerticalAlignment="Stretch"/>
+                </ScrollViewer>
+            </Border>
         </Grid>
+
         <local:Banner Height="48"
                       VerticalAlignment="Top" />
     </Grid>

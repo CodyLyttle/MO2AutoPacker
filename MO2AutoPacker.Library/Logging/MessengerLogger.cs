@@ -19,7 +19,8 @@ public class MessengerLogger : ILogger
         if (!IsEnabled(logLevel))
             return;
 
-        string formattedMessage = formatter(state, exception);
+        string time = DateTime.Now.ToShortTimeString();
+        string formattedMessage = $"[{time}] {formatter(state, exception)}";
         _messenger.Send(new LogMessage(formattedMessage));
     }
 

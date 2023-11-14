@@ -20,18 +20,19 @@ public class MainWindowViewModelTests
     private readonly Mock<IDirectoryManager> _mockDirectoryManager;
     private readonly ModListReader _modListReader;
     private readonly PathPickerStub _pathPicker;
+    private readonly DispatcherStub _dispatcher;
     private MainWindowViewModel _testTarget;
 
     public MainWindowViewModelTests()
     {
         _messenger = new WeakReferenceMessenger();
         _pathPicker = new PathPickerStub();
+        _dispatcher = new DispatcherStub();
         _mockDirectoryManager = new Mock<IDirectoryManager>();
         _confirmationDialog = new ConfirmationDialogStub(true);
         _modListReader = new ModListReader(_mockDirectoryManager.Object);
         _testTarget = new MainWindowViewModel(_messenger, _confirmationDialog, _pathPicker,
-            _mockDirectoryManager.Object,
-            _modListReader);
+            _mockDirectoryManager.Object, _modListReader, _dispatcher);
     }
 
     [Fact]
@@ -51,8 +52,7 @@ public class MainWindowViewModelTests
         _mockDirectoryManager.Setup(x => x.GetArchiverFolder()).Returns(tempDir.GetArchiverFolder);
         _mockDirectoryManager.Setup(x => x.GetModOrganizerFolder()).Returns(tempDir.GetModOrganizerFolder);
         _testTarget = new MainWindowViewModel(_messenger, _confirmationDialog, _pathPicker,
-            _mockDirectoryManager.Object,
-            _modListReader);
+            _mockDirectoryManager.Object, _modListReader, _dispatcher);
 
         // Assert
         Assert.Equal(tempDir.GetArchiverFolder().FullName, _testTarget.ArchiverPath);
