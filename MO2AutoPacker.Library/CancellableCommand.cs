@@ -1,16 +1,17 @@
 ﻿using System.Windows.Input;
+using CommunityToolkit.Mvvm.ComponentModel;
 using MO2AutoPacker.Library.Services;
 
 namespace MO2AutoPacker.Library;
 
-public class CancellableCommand : ICommand
+public class CancellableCommand : ObservableObject, ICommand
 {
     private readonly Func<CancellationToken, Task> _command;
     private readonly IUIThreadDispatcher _dispatcher;
     private readonly object _lock = new();
-    private Func<object?, bool>? _canBegin;
 
     private CancellationTokenSource? _cts;
+    private bool _canBegin;
     private bool _hasFailed;
     private bool _isCancelling;
     private bool _isRunning;
@@ -27,7 +28,7 @@ public class CancellableCommand : ICommand
 
     public event EventHandler<Exception>? ErrorOccurred;
 
-    public Func<object?, bool>? CanBegin
+    public bool CanBegin
     {
         get => _canBegin;
         set
@@ -36,6 +37,7 @@ public class CancellableCommand : ICommand
                 return;
 
             _canBegin = value;
+            OnPropertyChanged();
             CanExecuteChanged?.Invoke(this, EventArgs.Empty);
         }
     }
@@ -49,6 +51,7 @@ public class CancellableCommand : ICommand
                 return;
 
             _hasFailed = value;
+            OnPropertyChanged();
             CanExecuteChanged?.Invoke(this, EventArgs.Empty);
         }
     }
@@ -62,10 +65,10 @@ public class CancellableCommand : ICommand
                 return;
 
             _isCancelling = value;
+            OnPropertyChanged();
             CanExecuteChanged?.Invoke(this, EventArgs.Empty);
         }
     }
-
 
     public bool IsRunning
     {
@@ -76,6 +79,7 @@ public class CancellableCommand : ICommand
                 return;
 
             _isRunning = value;
+            OnPropertyChanged();
             CanExecuteChanged?.Invoke(this, EventArgs.Empty);
         }
     }
@@ -90,7 +94,7 @@ public class CancellableCommand : ICommand
             return true;
 
         // Can run task.
-        return CanBegin is null || CanBegin.Invoke(parameter);
+        return CanBegin;
     }
 
     public void Execute(object? parameter)
@@ -104,7 +108,10 @@ public class CancellableCommand : ICommand
             {
                 IsCancelling = true;
                 _cts!.Cancel();
+                return;
             }
+
+            IsRunning = true;
 
             _cts = new CancellationTokenSource();
             CancellationToken token = _cts.Token;
@@ -116,7 +123,7 @@ public class CancellableCommand : ICommand
                     await _command.Invoke(token);
                     Completed?.Invoke(this, true);
                 }
-                catch (TaskCanceledException)
+                catch (OperationCanceledException)
                 {
                     _dispatcher.Invoke(() => Completed?.Invoke(this, false));
                 }
