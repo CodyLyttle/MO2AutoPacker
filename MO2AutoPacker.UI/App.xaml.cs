@@ -15,7 +15,7 @@ public partial class App : Application
         DispatcherUnhandledException += OnDispatcherUnhandledException;
 
         IUIThreadDispatcher dispatcher = new WpfDispatcher();
-        IConfirmationDialog confirmationDialog = new WindowsConfirmationDialog(dispatcher);
+        IConfirmationDialog confirmationDialog = new WpfConfirmationDialog(dispatcher);
         IPathPicker pathPicker = new WindowsPathPicker();
         Services = Bootstrapper.Bootstrap(confirmationDialog, dispatcher, pathPicker);
 
