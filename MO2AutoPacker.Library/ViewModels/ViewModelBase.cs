@@ -2,5 +2,8 @@
 
 namespace MO2AutoPacker.Library.ViewModels;
 
-// Class is likely unneeded but serves to simplify future refactors.
-public class ViewModelBase : ObservableObject { }
+public partial class ViewModelBase : ObservableObject
+{
+    [ObservableProperty]
+    private bool _isEnabled = true;
+}
