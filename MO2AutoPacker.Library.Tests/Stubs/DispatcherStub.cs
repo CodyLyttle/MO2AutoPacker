@@ -4,5 +4,7 @@ namespace MO2AutoPacker.Library.Tests.Stubs;
 
 public class DispatcherStub : IUIThreadDispatcher
 {
-    public void Invoke(Action action) => action.Invoke();
+    public void Invoke(Action callback) => callback.Invoke();
+
+    public TResult Invoke<TResult>(Func<TResult> callback) => callback.Invoke();
 }

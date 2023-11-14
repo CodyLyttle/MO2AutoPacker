@@ -3,6 +3,7 @@ using System.IO;
 using System.Windows;
 using System.Windows.Threading;
 using MO2AutoPacker.Library;
+using MO2AutoPacker.Library.Services;
 using MO2AutoPacker.UI.Implementations;
 
 namespace MO2AutoPacker.UI;
@@ -13,9 +14,10 @@ public partial class App : Application
     {
         DispatcherUnhandledException += OnDispatcherUnhandledException;
 
-        Services = Bootstrapper.Bootstrap(new WindowsConfirmationDialog(),
-            new WpfDispatcher(),
-            new WindowsPathPicker());
+        IUIThreadDispatcher dispatcher = new WpfDispatcher();
+        IConfirmationDialog confirmationDialog = new WindowsConfirmationDialog(dispatcher);
+        IPathPicker pathPicker = new WindowsPathPicker();
+        Services = Bootstrapper.Bootstrap(confirmationDialog, dispatcher, pathPicker);
 
         InitializeComponent();
     }

@@ -2,5 +2,7 @@
 
 public interface IUIThreadDispatcher
 {
-    void Invoke(Action action);
+    void Invoke(Action callback);
+
+    TResult Invoke<TResult>(Func<TResult> callback);
 }

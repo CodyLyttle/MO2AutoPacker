@@ -171,16 +171,11 @@ public partial class MainWindowViewModel : ViewModelBase, IRecipient<ProfileChan
             packedArchiveCount, sw.ElapsedMilliseconds);
 
         ThrowIfCancelled();
-        
-        // Disable UI until dialog closed.
-        _dispatcher.Invoke(() => IsEnabled = false);
-        
+
         // Prompt user before creating real archives.
         _confirmationDialog.PromptUser($"Archive profile '{SelectedProfile?.Name}'",
             $"Create {packedArchiveCount} archives from {fileSum} files?");
-        
-        _dispatcher.Invoke(() => IsEnabled = true);
-        
+
         return Task.CompletedTask;
 
         void ThrowIfCancelled()

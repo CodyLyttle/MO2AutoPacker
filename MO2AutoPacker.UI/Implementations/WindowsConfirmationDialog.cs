@@ -5,6 +5,14 @@ namespace MO2AutoPacker.UI.Implementations;
 
 public class WindowsConfirmationDialog : IConfirmationDialog
 {
+    private readonly IUIThreadDispatcher _dispatcher;
+
+    public WindowsConfirmationDialog(IUIThreadDispatcher dispatcher)
+    {
+        _dispatcher = dispatcher;
+    }
+
     public bool PromptUser(string title, string description) =>
-        MessageBox.Show(description, title, MessageBoxButton.YesNo) is MessageBoxResult.Yes;
+        _dispatcher.Invoke(() => MessageBox.Show(App.Current.MainWindow!, description, title, MessageBoxButton.YesNo)
+            is MessageBoxResult.Yes);
 }
